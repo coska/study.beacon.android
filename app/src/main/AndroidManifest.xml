@@ -23,6 +23,11 @@
 			android:name=".model.BeaconProvider"
 			android:authorities="com.coska.beacon.provider"
 			android:exported="false" />
+
+		<service
+			android:name=".service.TaskService"
+			android:exported="false"
+			android:label="task_service" />
 	</application>
 
 </manifest>
