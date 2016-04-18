@@ -20,6 +20,7 @@ public class Database extends SQLiteOpenHelper {
 
 		db.execSQL("CREATE TABLE " + Action._table + " ("
 				+ Action._ID + " INTEGER PRIMARY KEY, "
+				+ Action._task_id + " INTEGER, "
 				+ Action.name + " TEXT, "
 				+ Action.type + " INTEGER);");
 

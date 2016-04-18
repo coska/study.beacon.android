@@ -25,19 +25,19 @@ public class BeaconProvider extends ContentProvider {
 	private static final int ACTION = 1;
 	private static final int ACTION_ID = 2;
 
-	private static final UriMatcher sUriMatcher;
+	private static final UriMatcher matcher;
 
 	static {
-		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-		sUriMatcher.addURI(AUTHORITY, PATH_ACTION, ACTION);
-		sUriMatcher.addURI(AUTHORITY, PATH_ACTION + "/#", ACTION_ID);
+		matcher = new UriMatcher(UriMatcher.NO_MATCH);
+		matcher.addURI(AUTHORITY, PATH_ACTION, ACTION);
+		matcher.addURI(AUTHORITY, PATH_ACTION + "/#", ACTION_ID);
 	}
 
-	private SQLiteOpenHelper mOpenHelper;
+	private SQLiteOpenHelper helper;
 
 	@Override
 	public boolean onCreate() {
-		mOpenHelper = new Database(getContext());
+		helper = new Database(getContext());
 		return true;
 	}
 
@@ -47,7 +47,7 @@ public class BeaconProvider extends ContentProvider {
 
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
 
-		switch (sUriMatcher.match(uri)) {
+		switch (matcher.match(uri)) {
 			case ACTION:
 				builder.setTables(Action._table);
 				break;
@@ -61,7 +61,7 @@ public class BeaconProvider extends ContentProvider {
 				throw new IllegalArgumentException("Unknown URI " + uri);
 		}
 
-		Cursor cursor = builder.query(mOpenHelper.getReadableDatabase(), projection, selection, selectionArgs, null, null, sortOrder);
+		Cursor cursor = builder.query(helper.getReadableDatabase(), projection, selection, selectionArgs, null, null, sortOrder);
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
 	}
@@ -70,7 +70,7 @@ public class BeaconProvider extends ContentProvider {
 	@Override
 	public String getType(@NonNull Uri uri) {
 
-		switch (sUriMatcher.match(uri)) {
+		switch (matcher.match(uri)) {
 
 			case ACTION:
 				return "vnd.android.cursor.dir/com.coska.beacon.action";
@@ -88,9 +88,9 @@ public class BeaconProvider extends ContentProvider {
 	public Uri insert(@NonNull Uri uri, ContentValues values) {
 
 		final long rowId;
-		switch (sUriMatcher.match(uri)) {
+		switch (matcher.match(uri)) {
 			case ACTION: {
-				rowId = mOpenHelper.getWritableDatabase().insert(Action._table, null, values);
+				rowId = helper.getWritableDatabase().insert(Action._table, null, values);
 				break;
 			}
 
@@ -111,10 +111,10 @@ public class BeaconProvider extends ContentProvider {
 	@Override
 	public int delete(@NonNull Uri uri, String whereClause, String[] whereArgs) {
 
-		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		SQLiteDatabase db = helper.getWritableDatabase();
 
 		final int count;
-		switch (sUriMatcher.match(uri)) {
+		switch (matcher.match(uri)) {
 			case ACTION:
 				count = db.delete(Action._table, whereClause, whereArgs);
 				break;
@@ -142,10 +142,10 @@ public class BeaconProvider extends ContentProvider {
 	@Override
 	public int update(@NonNull Uri uri, ContentValues values, String whereClause, String[] whereArgs) {
 
-		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		SQLiteDatabase db = helper.getWritableDatabase();
 
 		final int count;
-		switch (sUriMatcher.match(uri)) {
+		switch (matcher.match(uri)) {
 			case ACTION:
 				count = db.update(Action._table, values, whereClause, whereArgs);
 				break;
