@@ -18,19 +18,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.coska.beacon.R;
+import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.ui.base.BaseActivity;
 
 import java.util.UUID;
 
 import static android.provider.BaseColumns._ID;
-import static com.coska.beacon.model.BeaconProvider.AUTHORITY;
 import static com.coska.beacon.model.BeaconProvider.PATH_BEACON;
-import static com.coska.beacon.model.BeaconProvider.SCHEME;
 
 public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-	private static final Uri beaconUri = Uri.parse(SCHEME + AUTHORITY + "/" + PATH_BEACON);
 	private static final int LOADER_ID = 1;
 
 	private RecyclerView recyclerView;
@@ -63,7 +61,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 				cv.put(Beacon.name, Long.toString(Math.abs(System.currentTimeMillis())));
 				cv.put(Beacon.uuid, UUID.randomUUID().toString());
 
-				getContentResolver().insert(beaconUri, cv);
+				getContentResolver().insert(BeaconProvider.buildUri(PATH_BEACON), cv);
 				return true;
 			}
 
@@ -71,18 +69,14 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 				ContentValues cv = new ContentValues();
 				cv.put(Beacon.name, Long.toString(Math.abs(System.currentTimeMillis())));
 
-				Uri beaconWithId = beaconUri.buildUpon()
-						.appendPath(String.valueOf(recyclerView.getAdapter().getItemId(0)))
-						.build();
-				getContentResolver().update(beaconWithId, cv, null, null);
+				Uri uri = BeaconProvider.buildUri(PATH_BEACON, recyclerView.getAdapter().getItemId(0));
+				getContentResolver().update(uri, cv, null, null);
 				return true;
 			}
 
 			case R.id.delete: {
-				Uri beaconWithId = beaconUri.buildUpon()
-						.appendPath(String.valueOf(recyclerView.getAdapter().getItemId(0)))
-						.build();
-				getContentResolver().delete(beaconWithId, null, null);
+				Uri uri = BeaconProvider.buildUri(PATH_BEACON, recyclerView.getAdapter().getItemId(0));
+				getContentResolver().delete(uri, null, null);
 				return true;
 			}
 
@@ -93,7 +87,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new CursorLoader(this, beaconUri, null, null, null, _ID + " DESC");
+		return new CursorLoader(this, BeaconProvider.buildUri(PATH_BEACON), null, null, null, _ID + " DESC");
 	}
 
 	@Override

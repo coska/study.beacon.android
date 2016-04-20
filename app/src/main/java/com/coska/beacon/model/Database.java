@@ -4,9 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.coska.beacon.model.entity.Action;
+import com.coska.beacon.model.entity.action.Action;
 import com.coska.beacon.model.entity.Beacon;
-import com.coska.beacon.model.entity.Rule;
+import com.coska.beacon.model.entity.rule.Rule;
 import com.coska.beacon.model.entity.Task;
 
 public class Database extends SQLiteOpenHelper {

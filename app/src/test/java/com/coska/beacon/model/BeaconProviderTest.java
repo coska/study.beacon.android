@@ -7,9 +7,9 @@ import android.os.Build;
 
 import com.coska.beacon.BaseTest;
 import com.coska.beacon.BuildConfig;
-import com.coska.beacon.model.entity.Action;
+import com.coska.beacon.model.entity.action.Action;
 import com.coska.beacon.model.entity.Beacon;
-import com.coska.beacon.model.entity.Rule;
+import com.coska.beacon.model.entity.rule.Rule;
 import com.coska.beacon.model.entity.Task;
 
 import org.junit.Before;
