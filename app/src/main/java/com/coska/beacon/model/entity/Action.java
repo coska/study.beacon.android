@@ -15,6 +15,8 @@ public abstract class Action implements BaseColumns {
 	public static final String name = "name";
 	public static final String type = "type";
 
+	public static final String configuration = "configuration";
+
 	public abstract void perform(Context context);
 
 	private static final class ActionMessage extends Action {

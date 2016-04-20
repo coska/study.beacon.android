@@ -15,6 +15,8 @@ public abstract class Rule implements BaseColumns {
 	public static final String name = "name";
 	public static final String type = "type";
 
+	public static final String configuration = "configuration";
+
 	public abstract boolean isMatch(Context context);
 
 	public static final class Time extends Rule {
