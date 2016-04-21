@@ -3,7 +3,11 @@ package com.coska.beacon.model.entity.rule;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.BaseColumns;
+
+import com.coska.beacon.model.BeaconProvider;
+import com.coska.beacon.model.entity.EntityIterator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,6 +60,23 @@ public abstract class Rule implements BaseColumns {
 			cv.put(Rule.type, type.ordinal());
 			cv.put(Rule.configuration, json.toString());
 			return cv;
+		}
+	}
+
+	public static final class Iterator extends EntityIterator<Rule> {
+
+		public Iterator(Context context, Cursor cursor) {
+			super(context, cursor);
+		}
+
+		@Override
+		public Rule next(Cursor cursor) {
+			return getInstance(cursor);
+		}
+
+		@Override
+		protected Uri buildUriForDelete(long id) {
+			return BeaconProvider.buildUri(BeaconProvider.PATH_RULE, id);
 		}
 	}
 

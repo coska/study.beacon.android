@@ -3,8 +3,11 @@ package com.coska.beacon.model.entity.action;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.BaseColumns;
 
+import com.coska.beacon.model.BeaconProvider;
+import com.coska.beacon.model.entity.EntityIterator;
 import com.coska.beacon.model.entity.rule.Location;
 import com.coska.beacon.model.entity.rule.Time;
 
@@ -59,6 +62,23 @@ public abstract class Action implements BaseColumns {
 			cv.put(Action.type, type.ordinal());
 			cv.put(Action.configuration, json.toString());
 			return cv;
+		}
+	}
+
+	public static final class Iterator extends EntityIterator<Action> {
+
+		public Iterator(Context context, Cursor cursor) {
+			super(context, cursor);
+		}
+
+		@Override
+		public Action next(Cursor cursor) {
+			return getInstance(cursor);
+		}
+
+		@Override
+		protected Uri buildUriForDelete(long id) {
+			return BeaconProvider.buildUri(BeaconProvider.PATH_ACTION, id);
 		}
 	}
 
