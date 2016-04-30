@@ -5,10 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 
-import static com.coska.beacon.model.BeaconProvider.AUTHORITY;
+import com.coska.beacon.model.BeaconProvider;
+import com.coska.beacon.model.entity.Beacon;
+import com.coska.beacon.model.entity.Task;
+import com.coska.beacon.model.entity.action.Action;
+import com.coska.beacon.model.entity.rule.Rule;
+
 import static com.coska.beacon.model.BeaconProvider.PATH_ACTION;
-import static com.coska.beacon.model.BeaconProvider.SCHEME;
+import static com.coska.beacon.model.BeaconProvider.PATH_BEACON;
+import static com.coska.beacon.model.BeaconProvider.PATH_RULE;
+import static com.coska.beacon.model.BeaconProvider.PATH_TASK;
 
 public class TaskService extends IntentService {
 
@@ -27,10 +35,92 @@ public class TaskService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 
 		String uuid = intent.getStringExtra(BUNDLE_UUID);
+		if(TextUtils.isEmpty(uuid)) {
+			validateBeacons();
 
-		// TODO: retrieve entities and perform evaluation.
-		Uri actionUri = Uri.parse(SCHEME + AUTHORITY + "/" + PATH_ACTION);
-		Cursor cursor = getContentResolver().query(actionUri, null, null, null, null);
-		cursor.close();
+		} else {
+			validateBeacon(uuid);
+		}
+	}
+
+	private void validateBeacon(String uuid) {
+
+		Uri beaconUri = BeaconProvider.buildUri(PATH_BEACON, uuid);
+		Cursor cursor = getContentResolver().query(beaconUri, null, null, null, null);
+		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
+			final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
+			// TODO: retrieve tasks and validate them.
+		}
+
+		close(cursor);
+	}
+
+	private void validateBeacons() {
+
+		Uri beaconUri = BeaconProvider.buildUri(PATH_BEACON);
+		Cursor cursor = getContentResolver().query(beaconUri, null, null, null, null);
+		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
+			final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
+			// TODO: retrieve tasks and validate them.
+		}
+
+		close(cursor);
+	}
+
+	private void validateTasks(long beaconId) {
+
+		Uri taskUri = BeaconProvider.buildUri(PATH_BEACON, beaconId, PATH_TASK);
+		Cursor cursor = getContentResolver().query(taskUri, null, null, null, null);
+		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
+			final long taskId = cursor.getLong(cursor.getColumnIndex(Task._ID));
+			// TODO: validate rules associated with the task id, and execute actions only if all rules are qualified.
+		}
+
+		close(cursor);
+	}
+
+	private boolean validateRules(long taskId) {
+
+		Uri ruleUri = BeaconProvider.buildUri(PATH_TASK, taskId, PATH_RULE);
+		Cursor cursor = null;
+		try {
+			cursor = getContentResolver().query(ruleUri, null, null, null, null);
+			Rule.Iterator iterator = new Rule.Iterator(this, cursor);
+			while (iterator.hasNext()) {
+				if(!iterator.next().isMatch(this)) {
+					return false;
+				}
+			}
+
+		} finally {
+			close(cursor);
+		}
+
+		return true;
+	}
+
+	private void validateActions(long taskId) {
+
+		Uri actionUri = BeaconProvider.buildUri(PATH_TASK, taskId, PATH_ACTION);
+		Cursor cursor = null;
+		try {
+			cursor = getContentResolver().query(actionUri, null, null, null, null);
+			Action.Iterator iterator = new Action.Iterator(this, cursor);
+			while (iterator.hasNext()) {
+				iterator.next().perform(this);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		} finally {
+			close(cursor);
+		}
+	}
+
+	private void close(Cursor cursor) {
+		if(cursor != null) {
+			cursor.close();
+		}
 	}
 }
