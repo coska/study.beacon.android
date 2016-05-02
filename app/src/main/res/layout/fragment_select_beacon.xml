@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--include toolbar-->
+    <!--<android.support.v7.widget.Toolbar android:id="@+id/toolbar_actionbar"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="?attr/actionBarSize"-->
+        <!--android:background="@color/primaryColor"-->
+        <!--app:titleTextAppearance="@style/toolbarTitle"-->
+        <!--app:theme="@style/toolbarTheme"-->
+        <!--app:popupTheme="@style/overflowMenuStyle">-->
+    <!--</android.support.v7.widget.Toolbar>-->
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Beacon"/>
+
+        <include layout="@layout/bottom_btn_double" />
+    </RelativeLayout>
+</LinearLayout>

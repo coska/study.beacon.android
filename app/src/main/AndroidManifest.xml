@@ -23,6 +23,11 @@
 			</intent-filter>
 		</activity>
 
+		<activity android:name=".ui.task.NewTaskActivity"
+			android:configChanges="orientation|keyboardHidden|screenSize"
+			android:exported="false"
+			android:screenOrientation="portrait" />
+
 		<provider
 			android:name=".model.BeaconProvider"
 			android:authorities="com.coska.beacon.provider"

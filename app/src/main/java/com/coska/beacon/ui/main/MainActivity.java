@@ -1,6 +1,7 @@
 package com.coska.beacon.ui.main;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
@@ -21,13 +22,14 @@ import com.coska.beacon.R;
 import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.ui.base.BaseActivity;
+import com.coska.beacon.ui.task.NewTaskActivity;
 
 import java.util.UUID;
 
 import static android.provider.BaseColumns._ID;
 import static com.coska.beacon.model.BeaconProvider.PATH_BEACON;
 
-public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
 	private static final int LOADER_ID = 1;
 
@@ -43,6 +45,23 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 		recyclerView.setHasFixedSize(true);
 
 		getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+
+		//noinspection ConstantConditions
+		findViewById(R.id.new_task_floating_btn).setOnClickListener(this);
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.new_task_floating_btn:
+				openNewTask();
+				break;
+		}
+	}
+
+	private void openNewTask() {
+		Intent intent = new Intent(this, NewTaskActivity.class);
+		startActivity(intent);
 	}
 
 	@Override
