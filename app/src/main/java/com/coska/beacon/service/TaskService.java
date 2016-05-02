@@ -50,6 +50,7 @@ public class TaskService extends IntentService {
 		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
 			final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
 			// TODO: retrieve tasks and validate them.
+			validateTasks(beaconId);
 		}
 
 		close(cursor);
@@ -62,6 +63,7 @@ public class TaskService extends IntentService {
 		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
 			final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
 			// TODO: retrieve tasks and validate them.
+			validateTasks(beaconId);
 		}
 
 		close(cursor);
@@ -74,6 +76,11 @@ public class TaskService extends IntentService {
 		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
 			final long taskId = cursor.getLong(cursor.getColumnIndex(Task._ID));
 			// TODO: validate rules associated with the task id, and execute actions only if all rules are qualified.
+			if(validateRules(taskId) == true)
+			{
+				validateActions(taskId);
+			}
+			// What to do about location ???
 		}
 
 		close(cursor);
