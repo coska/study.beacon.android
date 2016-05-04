@@ -39,7 +39,7 @@ public class TaskService extends IntentService {
 			validateBeacons();
 
 		} else {
-			validateBeacon(uuid);
+			validateBeacon(uuid);		/	uuid에 대한 검색에 오류 존재
 		}
 	}
 
