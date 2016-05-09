@@ -70,7 +70,7 @@ public abstract class Rule implements BaseColumns {
 		}
 
 		@Override
-		public Rule next(Cursor cursor) {
+		protected Rule next(Cursor cursor) {
 			return getInstance(cursor);
 		}
 
