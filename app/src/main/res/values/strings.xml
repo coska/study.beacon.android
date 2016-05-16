@@ -4,4 +4,7 @@
 	<string name="back">CANCEL</string>
 	<string name="next">NEXT</string>
 	<string name="select_beacon">Select Beacon</string>
+	<string name="tab_beacon">Beacons</string>
+	<string name="tab_Task">Tasks</string>
+
 </resources>

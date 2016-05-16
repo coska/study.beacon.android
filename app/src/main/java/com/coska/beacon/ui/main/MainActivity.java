@@ -2,44 +2,34 @@ package com.coska.beacon.ui.main;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+
+import android.view.Menu;
 
 import com.coska.beacon.R;
 import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.ui.base.BaseActivity;
-import com.coska.beacon.ui.task.NewTaskActivity;
 
 import java.util.UUID;
 
-import static android.provider.BaseColumns._ID;
-import static com.coska.beacon.model.BeaconProvider.PATH_BEACON;
 
-public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class MainActivity extends BaseActivity { // implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
-	private static final int LOADER_ID = 1;
+	//private static final int LOADER_ID = 1;
 
-	private RecyclerView recyclerView;
+//	private RecyclerView recyclerView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		showFragment(new MainFragment(), R.id.fragment_container, true, false);
+
+		/*
 		recyclerView = (RecyclerView) findViewById(android.R.id.list);
 		recyclerView.setLayoutManager(new LinearLayoutManager(this));
 		recyclerView.setHasFixedSize(true);
@@ -48,21 +38,15 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
 		//noinspection ConstantConditions
 		findViewById(R.id.new_task_floating_btn).setOnClickListener(this);
+		*/
 	}
 
 	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-			case R.id.new_task_floating_btn:
-				openNewTask();
-				break;
-		}
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		overridePendingTransition(0, 0);
 	}
 
-	private void openNewTask() {
-		Intent intent = new Intent(this, NewTaskActivity.class);
-		startActivity(intent);
-	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -80,7 +64,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 				cv.put(Beacon.name, Long.toString(Math.abs(System.currentTimeMillis())));
 				cv.put(Beacon.uuid, UUID.randomUUID().toString());
 
-				getContentResolver().insert(BeaconProvider.buildUri(PATH_BEACON), cv);
+				getContentResolver().insert(BeaconProvider.buildUri(BeaconProvider.PATH_BEACON), cv);
 				return true;
 			}
 
@@ -88,14 +72,14 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 				ContentValues cv = new ContentValues();
 				cv.put(Beacon.name, Long.toString(Math.abs(System.currentTimeMillis())));
 
-				Uri uri = BeaconProvider.buildUri(PATH_BEACON, recyclerView.getAdapter().getItemId(0));
-				getContentResolver().update(uri, cv, null, null);
+//				Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_BEACON, recyclerView.getAdapter().getItemId(0));
+//				getContentResolver().update(uri, cv, null, null);
 				return true;
 			}
 
 			case R.id.delete: {
-				Uri uri = BeaconProvider.buildUri(PATH_BEACON, recyclerView.getAdapter().getItemId(0));
-				getContentResolver().delete(uri, null, null);
+//				Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_BEACON, recyclerView.getAdapter().getItemId(0));
+//				getContentResolver().delete(uri, null, null);
 				return true;
 			}
 
@@ -103,7 +87,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 				return super.onOptionsItemSelected(item);
 		}
 	}
-
+/*
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		return new CursorLoader(this, BeaconProvider.buildUri(PATH_BEACON), null, null, null, _ID + " DESC");
@@ -161,4 +145,5 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 			super(itemView);
 		}
 	}
+	*/
 }
