@@ -45,11 +45,16 @@ public class TaskService extends IntentService {
 
 	private void validateBeacon(String uuid) {
 
-		Uri beaconUri = BeaconProvider.buildUri(PATH_BEACON, uuid);
+		Uri beaconUri = BeaconProvider.buildUri(PATH_BEACON);
 		Cursor cursor = getContentResolver().query(beaconUri, null, null, null, null);
+
 		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
-			final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
-			// TODO: retrieve tasks and validate them.
+			final String beaconuuid = cursor.getString(cursor.getColumnIndex(Beacon.uuid));
+			if(beaconuuid.equals(uuid))
+			{
+				final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
+				validateTasks(beaconId);
+			}
 		}
 
 		close(cursor);
@@ -62,6 +67,7 @@ public class TaskService extends IntentService {
 		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
 			final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
 			// TODO: retrieve tasks and validate them.
+			validateTasks(beaconId);
 		}
 
 		close(cursor);
@@ -74,6 +80,11 @@ public class TaskService extends IntentService {
 		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
 			final long taskId = cursor.getLong(cursor.getColumnIndex(Task._ID));
 			// TODO: validate rules associated with the task id, and execute actions only if all rules are qualified.
+			if(validateRules(taskId) == true)
+			{
+				validateActions(taskId);
+			}
+			// What to do about location ???
 		}
 
 		close(cursor);
