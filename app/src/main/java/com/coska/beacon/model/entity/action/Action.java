@@ -72,7 +72,7 @@ public abstract class Action implements BaseColumns {
 		}
 
 		@Override
-		public Action next(Cursor cursor) {
+		protected Action next(Cursor cursor) {
 			return getInstance(cursor);
 		}
 

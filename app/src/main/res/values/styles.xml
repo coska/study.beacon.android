@@ -8,4 +8,32 @@
 		<item name="colorAccent">@color/colorAccent</item>
 	</style>
 
+	<!--toolbar -->
+	<style name="toolbarTheme"
+		parent="@style/ThemeOverlay.AppCompat.ActionBar">
+
+		<!--<item name="android:background">@color/primaryColor</item>-->
+		<!--<item name="colorAccent">@color/pcc_green_dark</item>-->
+		<!--<item name="actionMenuTextColor">@color/pcc_green_dark</item>-->
+
+		<item name="android:textColorPrimary">@color/white</item>
+		<item name="android:textColorSecondary">@color/white</item>
+	</style>
+
+	<style name="toolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
+		<item name="android:textSize">20dp</item>
+	</style>
+
+	<style name="overflowMenuStyle" parent="ThemeOverlay.AppCompat.Light">
+		<item name="android:background">@android:color/transparent</item>
+		<item name="android:textColor">@color/primaryText</item>
+	</style>
+
+	<style name="tabTextStyle">
+		<item name="android:textSize">13sp</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:textStyle">bold</item>
+	</style>
+
+
 </resources>
