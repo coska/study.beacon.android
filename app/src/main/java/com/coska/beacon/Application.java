@@ -35,9 +35,9 @@ public class Application extends android.app.Application implements BootstrapNot
 		parsers.add(new BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_TLM_LAYOUT));
 		parsers.add(new BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
 		parsers.add(new BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_URL_LAYOUT));
-		beaconManager.bind(this);
+//		beaconManager.bind(this);
 
-		backgroundPowerSaver = new BackgroundPowerSaver(this);
+//		backgroundPowerSaver = new BackgroundPowerSaver(this);
 	}
 
 	@Override
