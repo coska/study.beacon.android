@@ -46,15 +46,13 @@ public class TaskService extends IntentService {
 	private void validateBeacon(String uuid) {
 
 		Uri beaconUri = BeaconProvider.buildUri(PATH_BEACON);
-		Cursor cursor = getContentResolver().query(beaconUri, null, null, null, null);
+		String where_st = Beacon.uuid + "=?";
+
+		Cursor cursor = getContentResolver().query(beaconUri, null, where_st, new String[]{ uuid }, null);
 
 		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
-			final String beaconuuid = cursor.getString(cursor.getColumnIndex(Beacon.uuid));
-			if(beaconuuid.equals(uuid))
-			{
-				final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
-				validateTasks(beaconId);
-			}
+			final long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
+			validateTasks(beaconId);
 		}
 
 		close(cursor);
