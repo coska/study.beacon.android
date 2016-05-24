@@ -3,14 +3,225 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical" android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dip"
+        android:layout_marginTop="10dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Beacon"
+        android:id="@+id/txtEditBeacon"
+        android:textAlignment="center"
+        android:textColor="#0090ff"
+        android:textSize="35sp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Done"
+        android:id="@+id/btnDone"
+        android:layout_gravity="top|right"
+        android:textAlignment="center"
+        android:layout_alignParentRight="true" />
+    </RelativeLayout>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/common_google_signin_btn_text_dark_focused"
+        android:orientation="horizontal"
+        android:padding="5dip"
+        android:layout_marginTop="10dp">
+        <!--  ListRow Left sied Thumbnail image -->
+        <LinearLayout android:id="@+id/beaconNameRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Beacon"/>
-
-        <include layout="@layout/bottom_btn_double" />
+            android:padding="3dip"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="5dip">
+            <!-- Beacon Image -->
+            <ImageView
+                android:id="@+id/imgBeacon"
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:src="@drawable/common_full_open_on_phone"/>
+        </LinearLayout>
+        <!-- Beacon Name -->
+        <TextView
+            android:id="@+id/beacon_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#c900fb"
+            android:textSize="20sp"
+            android:layout_toRightOf="@+id/beaconNameRow"
+            android:text="Beacon 1"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/imgDelete"
+            android:layout_alignBottom="@+id/imgDelete"
+            android:layout_alignTop="@+id/imgDelete" />
+        <!-- Delete Icon -->
+        <ImageView android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_add_white_24dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/imgDelete" />
     </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Device Detail"
+        android:id="@+id/txtDetail"
+        android:textAlignment="center"
+        android:textColor="#0090ff"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp" />
+    <LinearLayout android:id="@+id/beaconUUIDRow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:orientation="vertical"
+        android:layout_marginRight="5dip">
+        <!-- Beacon Name -->
+        <TextView
+            android:id="@+id/txtUuid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#c900fb"
+            android:textSize="20sp"
+            android:text="UUID"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true" />
+        <TextView
+            android:id="@+id/beacon_uuid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="#c900fb"
+            android:textSize="20sp"
+            android:text="F333DDF8DF7D-2333-5323-4323"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="right" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/beaconMajorValue"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:padding="3dip"
+        android:orientation="horizontal"
+        android:touchscreenBlocksFocus="false"
+        android:weightSum="1">
+        <!-- Beacon Name -->
+        <TextView
+            android:id="@+id/txtMajor"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="#c900fb"
+            android:textSize="20sp"
+            android:text="Major Value"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical" />
+        <TextView
+            android:id="@+id/beacon_MajorValue"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:textColor="#c900fb"
+            android:textSize="20sp"
+            android:text="8873"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:textAlignment="gravity" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/beaconMinorValue"
+        android:layout_width="match_parent"
+        android:layout_height="43dp"
+        android:padding="3dip"
+        android:orientation="horizontal"
+        android:touchscreenBlocksFocus="false"
+        android:weightSum="1">
+        <!-- Beacon Name -->
+        <TextView
+            android:id="@+id/txtMinor"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="#c900fb"
+            android:textSize="20sp"
+            android:text="Minor Value"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical" />
+        <TextView
+            android:id="@+id/beacon_MinorValue"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:textColor="#c900fb"
+            android:textSize="20sp"
+            android:text="20784"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:textAlignment="gravity" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/beaconBattery"
+    android:layout_width="match_parent"
+    android:layout_height="43dp"
+    android:padding="3dip"
+    android:orientation="horizontal"
+    android:touchscreenBlocksFocus="false"
+    android:weightSum="1"
+        android:layout_marginTop="25dp">
+    <!-- Beacon Name -->
+    <TextView
+        android:id="@+id/txtBattery"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="#c900fb"
+        android:textSize="20sp"
+        android:text="Battery Level"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical" />
+    <TextView
+        android:id="@+id/beacon_BatteryValue"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:textColor="#c900fb"
+        android:textSize="20sp"
+        android:text="96%"
+        android:layout_alignParentRight="true"
+        android:gravity="right"
+        android:textAlignment="gravity" />
+</LinearLayout> <LinearLayout android:id="@+id/beaconTemperature"
+    android:layout_width="match_parent"
+    android:layout_height="43dp"
+    android:padding="3dip"
+    android:orientation="horizontal"
+    android:touchscreenBlocksFocus="false"
+    android:weightSum="1">
+    <!-- Beacon Name -->
+    <TextView
+        android:id="@+id/txtTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:textColor="#c900fb"
+        android:textSize="20sp"
+        android:text="Temperature"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_vertical" />
+    <TextView
+        android:id="@+id/beacon_TemperatureValue"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:textColor="#c900fb"
+        android:textSize="20sp"
+        android:text="19C"
+        android:layout_alignParentRight="true"
+        android:gravity="right"
+        android:textAlignment="gravity" />
+</LinearLayout>
+    <include layout="@layout/bottom_btn_double" />
 </LinearLayout>
