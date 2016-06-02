@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.coska.beacon.model.entity.Signal;
 import com.coska.beacon.model.entity.action.Action;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.model.entity.rule.Rule;
@@ -24,6 +25,18 @@ public class Database extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+
+		db.execSQL("CREATE TABLE " + Signal._table + " ("
+				+ Signal.time + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+				+ Signal.uuid + " TEXT NOT NULL, "
+				+ Signal.major + " TEXT DEFAULT '', "
+				+ Signal.minor + " TEXT DEFAULT '', "
+				+ Signal.distance + " REAL, "
+				+ Signal.telemetry + " INTEGER, "
+				+ Signal.battery + " INTEGER, "
+				+ Signal.pduCount + " INTEGER, "
+				+ Signal.uptime + " INTEGER, "
+				+ " UNIQUE (" + Signal.uuid + ", " + Signal.major + ", " + Signal.minor + ") ON CONFLICT REPLACE);");
 
 		db.execSQL("CREATE TABLE " + Beacon._table + " ("
 				+ Beacon._ID + " INTEGER PRIMARY KEY, "
