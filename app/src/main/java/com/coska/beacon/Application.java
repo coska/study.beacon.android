@@ -1,6 +1,11 @@
 package com.coska.beacon;
 
+import android.content.ContentValues;
+import android.net.Uri;
 import android.os.RemoteException;
+
+import com.coska.beacon.model.BeaconProvider;
+import com.coska.beacon.model.entity.Signal;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -13,6 +18,7 @@ import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,16 +41,16 @@ public class Application extends android.app.Application implements BootstrapNot
 		parsers.add(new BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_TLM_LAYOUT));
 		parsers.add(new BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_UID_LAYOUT));
 		parsers.add(new BeaconParser().setBeaconLayout(BeaconParser.EDDYSTONE_URL_LAYOUT));
-//		beaconManager.bind(this);
+		beaconManager.bind(this);
 
-//		backgroundPowerSaver = new BackgroundPowerSaver(this);
+		backgroundPowerSaver = new BackgroundPowerSaver(this);
 	}
 
 	@Override
 	public void onBeaconServiceConnect() {
 		try {
 			bind();  // scanning all beacons around for ids and distance
-
+/*
 			Identifier namespace = Identifier.parse("0x2f234454f4911ba9ffa6");
 			Identifier instanceId = Identifier.parse("0x000000000001");
 			Region region = new Region("some_beacon_name", namespace, instanceId, null);
@@ -54,7 +60,7 @@ public class Application extends android.app.Application implements BootstrapNot
 
 			// looking for a beacon in background
 			bootstrap = new RegionBootstrap(this, region);
-
+*/
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			beaconManager.unbind(this);
@@ -63,28 +69,48 @@ public class Application extends android.app.Application implements BootstrapNot
 	}
 
 	private void bind() throws RemoteException {
-		Region region = new Region("some_unique_value", null, null, null);
-		beaconManager.startRangingBeaconsInRegion(region);
+		beaconManager.startRangingBeaconsInRegion(new Region("some_unique_value", null, null, null));
 		beaconManager.setRangeNotifier(new RangeNotifier() {
+
+			private final Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_SIGNAL);
+
 			@Override
 			public void didRangeBeaconsInRegion(Collection<Beacon> collection, Region region) {
 
+				List<ContentValues> list = new ArrayList<>(collection.size());
 				for (Beacon beacon:collection) {
 
+					ContentValues cv = new ContentValues();
+					cv.put(Signal.uuid, String.valueOf(beacon.getServiceUuid()));
+/*
 					// Eddystone-UID frame
-					if (beacon.getServiceUuid() == 0xfeaa && beacon.getBeaconTypeCode() == 0x00) {
-						Identifier namespaceId = beacon.getId1();
-						Identifier instanceId = beacon.getId2();
-						double distanceInMeters = beacon.getDistance();
-
-						if (beacon.getExtraDataFields().size() > 0) {
-							long telemetryVersion = beacon.getExtraDataFields().get(0);
-							long batteryMilliVolts = beacon.getExtraDataFields().get(1);
-							long pduCount = beacon.getExtraDataFields().get(3);
-							long uptime = beacon.getExtraDataFields().get(4);
-						}
+					if (beacon.getServiceUuid() == 0xfeaa && beacon.getBeaconTypeCode() == 0x00) { }
+*/
+					List<Identifier> identifiers = beacon.getIdentifiers();
+					switch (identifiers.size()) {
+						default:
+						case 2: cv.put(Signal.minor, String.valueOf(identifiers.get(1)));
+						case 1: cv.put(Signal.major, String.valueOf(identifiers.get(0)));
+						case 0:
 					}
+
+					cv.put(Signal.distance, beacon.getDistance());
+
+					List<Long> extra = beacon.getExtraDataFields();
+					switch (extra.size()) {
+						default:
+						case 5: cv.put(Signal.uptime, extra.get(4));
+						case 4: cv.put(Signal.pduCount, extra.get(3));
+						case 3:
+						case 2: cv.put(Signal.battery, extra.get(1));
+						case 1: cv.put(Signal.telemetry, extra.get(0));
+						case 0:
+					}
+
+					list.add(cv);
 				}
+
+				getContentResolver().bulkInsert(uri, list.toArray(new ContentValues[list.size()]));
 			}
 		});
 	}
