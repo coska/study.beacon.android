@@ -1,6 +1,7 @@
 package com.coska.beacon.model.entity.action;
 
 import android.content.Context;
+import android.net.wifi.WifiManager;
 
 import org.json.JSONObject;
 
