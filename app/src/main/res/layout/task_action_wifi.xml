@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.coska.beacon.ui.task.action.WifiSwitchView style="@style/Task.Card"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<LinearLayout
+		style="@style/Coska.Container"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<TextView
+			style="@style/Task.Card.Title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Wifi switch" />
+
+		<Switch
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textOff="Off"
+			android:textOn="On" />
+	</LinearLayout>
+</com.coska.beacon.ui.task.action.WifiSwitchView>

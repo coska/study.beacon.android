@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout style="@style/Coska.Container"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:columnCount="2"
+	android:useDefaultMargins="true">
+
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_columnSpan="2">
+
+		<android.support.design.widget.TextInputEditText
+			android:id="@+id/name"
+			style="@style/Coska.Text.Input"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:hint="Name" />
+	</android.support.design.widget.TextInputLayout>
+
+	<TextView
+		style="@style/Coska.Text.Caption"
+		android:layout_columnSpan="2"
+		android:text="Device Detail" />
+
+	<TextView
+		style="@style/Coska.Text.Primary"
+		android:text="uuid" />
+
+	<TextView
+		android:id="@+id/uuid"
+		style="@style/Coska.Text.Secondary"
+		tools:text="uuid" />
+
+	<TextView
+		style="@style/Coska.Text.Primary"
+		android:text="Major value" />
+
+	<TextView
+		android:id="@+id/major"
+		style="@style/Coska.Text.Secondary"
+		tools:text="8873" />
+
+	<TextView
+		style="@style/Coska.Text.Primary"
+		android:text="Minor value" />
+
+	<TextView
+		android:id="@+id/minor"
+		style="@style/Coska.Text.Secondary"
+		tools:text="20784" />
+
+	<TextView
+		style="@style/Coska.Text.Primary"
+		android:text="Battery level" />
+
+	<TextView
+		android:id="@+id/battery"
+		style="@style/Coska.Text.Secondary"
+		tools:text="96%" />
+
+</GridLayout>

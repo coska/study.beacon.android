@@ -12,7 +12,5 @@ public class Beacon implements BaseColumns {
 	public static final String major = "major";
 	public static final String minor = "minor";
 
-	public static final String status = "status";
-
 	private Beacon() { }
 }

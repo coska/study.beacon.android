@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<LinearLayout
+		android:id="@+id/container"
+		style="@style/Coska.Container"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:animateLayoutChanges="true"
+		android:orientation="vertical">
+
+		<TextView
+			style="@style/Coska.Text.Caption"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Task Name" />
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<android.support.design.widget.TextInputEditText
+				android:id="@+id/name"
+				style="@style/Coska.Text.Input"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="Name" />
+		</android.support.design.widget.TextInputLayout>
+
+		<TextView
+			style="@style/Coska.Text.Caption"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Beacon" />
+
+		<Spinner
+			android:id="@+id/add_beacon"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+
+		<TextView
+			style="@style/Coska.Text.Caption"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Rule" />
+
+		<TextView
+			android:id="@+id/add_rule"
+			style="@style/Coska.Text.Button"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Add Rule" />
+
+		<TextView
+			style="@style/Coska.Text.Caption"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Action" />
+
+		<TextView
+			android:id="@+id/add_action"
+			style="@style/Coska.Text.Button"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Add Action" />
+
+	</LinearLayout>
+</ScrollView>

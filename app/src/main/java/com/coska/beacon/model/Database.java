@@ -43,8 +43,13 @@ public class Database extends SQLiteOpenHelper {
 				+ Beacon.uuid + " TEXT NOT NULL UNIQUE, "
 				+ Beacon.name + " TEXT, "
 				+ Beacon.major + " TEXT, "
-				+ Beacon.minor + " TEXT, "
-				+ Beacon.status + " TEXT);");
+				+ Beacon.minor + " TEXT);");
+
+		db.execSQL("CREATE VIEW " + Beacon._table + "_view AS "
+				+ " SELECT * FROM " + Beacon._table + " INNER JOIN " + Signal._table
+				+ " ON " + Beacon._table + "." + Beacon.uuid + "=" + Signal._table + "." + Signal.uuid
+				+ " AND " + Beacon._table + "." + Beacon.major + "=" + Signal._table + "." + Signal.major
+				+ " AND " + Beacon._table + "." + Beacon.minor + "=" + Signal._table + "." + Signal.minor);
 
 		db.execSQL("CREATE TABLE " + Task._table + " ("
 				+ Task._ID + " INTEGER PRIMARY KEY, "

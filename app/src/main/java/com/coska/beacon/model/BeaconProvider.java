@@ -99,11 +99,11 @@ public class BeaconProvider extends ContentProvider {
 				break;
 
 			case BEACON:
-				builder.setTables(Beacon._table);
+				builder.setTables(Beacon._table + "_view");
 				break;
 
 			case BEACON_ID:
-				builder.setTables(Beacon._table);
+				builder.setTables(Beacon._table + "_view");
 				builder.appendWhere(Beacon._ID + "=" + uri.getPathSegments().get(1));
 				break;
 
