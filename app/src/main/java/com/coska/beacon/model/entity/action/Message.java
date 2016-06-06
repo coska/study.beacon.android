@@ -17,6 +17,7 @@ public class Message extends Action {
 	private String getDialNumber() {
 		return json.optString(DIAL_NUMBER);
 	}
+
 	private String getSmsMessage() {
 		return json.optString(SMS_MESSAGE);
 	}

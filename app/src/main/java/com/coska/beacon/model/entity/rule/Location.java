@@ -9,15 +9,6 @@ import org.json.JSONObject;
 
 public class Location extends Rule {
 
-	/*
-	configuration sample JSON format.
-	{
-		"latitude": -99.99999,
-		"longitude": 99.99999,
-		"accuracy": 30.0
-	}
-	*/
-
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String ACCURACY = "accuracy";

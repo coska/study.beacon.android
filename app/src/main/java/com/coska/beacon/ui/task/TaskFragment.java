@@ -11,6 +11,9 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -18,8 +21,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.coska.beacon.R;
+import com.coska.beacon.model.BeaconCursorLoader;
 import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
+import com.coska.beacon.ui.BeaconFragment;
 import com.coska.beacon.ui.base.BaseFragment;
 
 public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
@@ -39,6 +44,28 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 	private TextView addRule, addAction;
 	private Spinner addBeacon;
 	private ViewGroup container;
+
+	public TaskFragment() {
+		setHasOptionsMenu(true);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.menu_add, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+			case R.id.add:
+				getFragmentManager().popBackStack();
+				return true;
+
+			default:
+				return super.onOptionsItemSelected(item);
+		}
+	}
 
 	@Nullable
 	@Override
@@ -81,7 +108,9 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 		addAction.setTag(count+1);
 
 		View view = LayoutInflater.from(getContext()).inflate(resId, container, false);
-		container.addView(view, count+7);
+
+		Integer index = (Integer) addRule.getTag();
+		container.addView(view, count+7 + (index == null ? 0 : index));
 	}
 
 	@Override
@@ -102,7 +131,8 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new CursorLoader(getContext(), uri, null, null, null, null);
+//		return new CursorLoader(getContext(), uri, null, null, null, null);
+		return new BeaconCursorLoader(getContext());
 	}
 
 	@Override

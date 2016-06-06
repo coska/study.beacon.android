@@ -21,7 +21,7 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 
 	private static final int LOADER_ID = ++_internal_loader_count;
 
-	private RecyclerView recyclerView;
+	protected RecyclerView recyclerView;
 	private ProgressBar progressBar;
 
 	protected TextView message;
@@ -70,7 +70,7 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 
 	public static abstract class Adapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
-		private final Cursor cursor;
+		public final Cursor cursor;
 		protected Adapter(Cursor cursor) {
 			this.cursor = cursor;
 		}

@@ -8,11 +8,6 @@ import org.json.JSONObject;
 
 public class PhoneCall extends Action {
 
-/*
-	{
-		"dial_number": "1234567890"
-*/
-
 	public static final String DIAL_NUMBER = "dial_number";
 
 	protected PhoneCall(JSONObject json) {
@@ -23,8 +18,6 @@ public class PhoneCall extends Action {
 		return json.optString(DIAL_NUMBER);
 	}
 
-	// Launch dial application as phone number being typed in, and let user decide whether to make a call or not.
-	// We don't have to ask extra permission
 	@Override
 	public void perform(Context context) {
 		Uri uri = Uri.fromParts("tel", getDialNumber(), null);

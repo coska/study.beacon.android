@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.coska.beacon.R;
+import com.coska.beacon.model.BeaconCursorLoader;
 import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.model.entity.Signal;
@@ -132,7 +133,8 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		return new BeaconLoader(getContext(), bundle.getString(UUID));
+//		return new BeaconLoader(getContext(), bundle.getString(UUID));
+		return new BeaconCursorLoader(getContext());
 	}
 
 	@Override
