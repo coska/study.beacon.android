@@ -29,7 +29,7 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.beacon_list_fragment, container, false);
+		return inflater.inflate(R.layout.base_list_fragment, container, false);
 	}
 
 	@Override
@@ -71,13 +71,11 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 	public static abstract class Adapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
 		public final Cursor cursor;
-		protected Adapter(Cursor cursor) {
-			this.cursor = cursor;
-		}
+		private View.OnClickListener listener;
 
-		@Override
-		public int getItemViewType(int position) {
-			return android.R.layout.simple_list_item_2;
+		protected Adapter(Cursor cursor, View.OnClickListener listener) {
+			this.cursor = cursor;
+			this.listener = listener;
 		}
 
 		@Override
@@ -92,6 +90,21 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 		@Override
 		public int getItemCount() {
 			return cursor.getCount();
+		}
+
+		@Override
+		public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+			listener = null;
+		}
+
+		@Override
+		public void onViewAttachedToWindow(VH holder) {
+			holder.itemView.setOnClickListener(listener);
+		}
+
+		@Override
+		public void onViewDetachedFromWindow(VH holder) {
+			holder.itemView.setOnClickListener(null);
 		}
 	}
 }

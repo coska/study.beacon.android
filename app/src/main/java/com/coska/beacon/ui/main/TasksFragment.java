@@ -1,4 +1,4 @@
-package com.coska.beacon.ui;
+package com.coska.beacon.ui.main;
 
 import android.database.Cursor;
 import android.net.Uri;
@@ -6,9 +6,6 @@ import android.os.Bundle;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -18,17 +15,14 @@ import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.TaskCursorLoader;
 import com.coska.beacon.model.entity.Task;
 import com.coska.beacon.ui.base.BaseListFragment;
-import com.coska.beacon.ui.task.TaskFragment;
+import com.coska.beacon.ui.beacon.BeaconActivity;
+import com.coska.beacon.ui.task.TaskActivity;
 
-public class TasksFragment extends BaseListFragment {
-
-	public TasksFragment() {
-		setHasOptionsMenu(true);
-	}
+public class TasksFragment extends BaseListFragment implements View.OnClickListener {
 
 	@Override
 	protected Adapter getAdapter(Cursor cursor) {
-		return new TasksAdapter(cursor);
+		return new TasksAdapter(cursor, this);
 	}
 
 	@Override
@@ -43,44 +37,32 @@ public class TasksFragment extends BaseListFragment {
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_add, menu);
-	}
+	public void onClick(View view) {
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+		Cursor cursor = ((Adapter) recyclerView.getAdapter()).cursor;
+		if(cursor.moveToPosition(recyclerView.getChildAdapterPosition(view))) {
 
-		switch (item.getItemId()) {
-			case R.id.add:
-				String tag = TaskFragment.class.getName();
-				beginTrasaction()
-						.add(android.R.id.content, new TaskFragment(), tag)
-						.remove(this)
-						.addToBackStack(tag)
-						.commit();
-				return true;
-
-			default:
-				return super.onOptionsItemSelected(item);
+			long id = cursor.getLong(cursor.getColumnIndex(Task._ID));
+			TaskActivity.startActivity(getActivity(), id);
 		}
 	}
 
 	private static final class TasksAdapter extends Adapter<ViewHolder> {
 
 		private final int name;
-		private TasksAdapter(Cursor cursor) {
-			super(cursor);
+		private TasksAdapter(Cursor cursor, View.OnClickListener listener) {
+			super(cursor, listener);
 			name = cursor.getColumnIndex(Task.name);
 		}
 
 		@Override
 		public int getItemViewType(int position) {
-			return android.R.layout.simple_list_item_1;
+			return R.layout.base_list_item1;
 		}
 
 		@Override
 		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, null));
+			return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false));
 		}
 
 		@Override

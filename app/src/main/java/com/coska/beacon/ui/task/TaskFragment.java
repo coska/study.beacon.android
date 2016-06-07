@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.Gravity;
@@ -24,10 +23,22 @@ import com.coska.beacon.R;
 import com.coska.beacon.model.BeaconCursorLoader;
 import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
-import com.coska.beacon.ui.BeaconFragment;
 import com.coska.beacon.ui.base.BaseFragment;
 
 public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+
+	private static final String ID = "_bundle_id";
+
+	public static BaseFragment getInstance(long id) {
+
+		Bundle bundle = new Bundle(1);
+		bundle.putLong(ID, id);
+
+		BaseFragment fragment = new TaskFragment();
+		fragment.setArguments(bundle);
+
+		return fragment;
+	}
 
 	private static final int LOADER_ID = ++_internal_loader_count;
 	private static final Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_BEACON);

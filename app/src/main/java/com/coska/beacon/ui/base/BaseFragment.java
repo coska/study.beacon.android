@@ -11,7 +11,7 @@ public class BaseFragment extends Fragment {
 	protected static volatile int _internal_loader_count = 0;
 
 	@SuppressLint("CommitTransaction")
-	protected FragmentTransaction beginTrasaction() {
+	protected FragmentTransaction beginTransaction() {
 		return getFragmentManager().beginTransaction()
 				.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left, R.anim.slide_in_from_left, R.anim.slide_out_to_right);
 	}

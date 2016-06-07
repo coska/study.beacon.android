@@ -1,4 +1,4 @@
-package com.coska.beacon.ui;
+package com.coska.beacon.ui.beacon;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -30,10 +30,6 @@ import com.coska.beacon.ui.base.BaseFragment;
 public class BeaconFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String UUID = "_uuid";
-
-	public static BaseFragment getInstance() {
-		return new BeaconFragment();
-	}
 
 	public static BaseFragment getInstance(String uuid) {
 		Bundle bundle = new Bundle(1);

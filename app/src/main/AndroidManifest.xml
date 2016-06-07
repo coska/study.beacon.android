@@ -26,15 +26,21 @@
 		android:supportsRtl="false"
 		android:theme="@style/AppTheme"
 		tools:ignore="GoogleAppIndexingWarning">
-		<activity
-			android:name=".ui.MainActivity"
-			android:windowSoftInputMode="stateHidden">
+		<activity android:name=".ui.main.MainActivity">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN" />
 
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
+
+		<activity
+			android:name=".ui.beacon.BeaconActivity"
+			android:windowSoftInputMode="stateHidden" />
+
+		<activity
+			android:name=".ui.task.TaskActivity"
+			android:windowSoftInputMode="stateHidden" />
 
 		<provider
 			android:name=".model.BeaconProvider"

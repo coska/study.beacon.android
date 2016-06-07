@@ -1,11 +1,10 @@
-package com.coska.beacon.ui;
+package com.coska.beacon.ui.beacon;
 
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,7 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.coska.beacon.R;
-import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.SignalCursorLoader;
 import com.coska.beacon.model.entity.Signal;
 
