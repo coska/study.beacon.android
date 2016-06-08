@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 
 import com.coska.beacon.R;
 import com.coska.beacon.ui.base.BaseActivity;
-import com.coska.beacon.ui.base.BaseFragment;
 
 public class TaskActivity extends BaseActivity {
 
-	private static final String ID = "_param_id";
+	private static final String TASK_ID = "_task_id";
 
 	public static void startActivity(Context context) {
 		context.startActivity(new Intent(context, TaskActivity.class));
@@ -20,7 +20,7 @@ public class TaskActivity extends BaseActivity {
 
 	public static void startActivity(Context context, long id) {
 		context.startActivity(new Intent(context, TaskActivity.class)
-				.putExtra(ID, id));
+				.putExtra(TASK_ID, id));
 	}
 
 	@Override
@@ -33,11 +33,22 @@ public class TaskActivity extends BaseActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		if(savedInstanceState == null) {
-			BaseFragment fragment = TaskFragment.getInstance(getIntent().getLongExtra(ID, -1));
-			getSupportFragmentManager().beginTransaction()
-					.replace(R.id.content, fragment)
-					.commit();
+		if(getIntent().hasExtra(TASK_ID)) {
+
+			((TextView) findViewById(android.R.id.title)).setText("Edit Task");
+			if(savedInstanceState == null) {
+				getSupportFragmentManager().beginTransaction()
+						.replace(R.id.content, TaskFragment.getInstance(getIntent().getLongExtra(TASK_ID, -1)))
+						.commit();
+			}
+
+		} else {
+			((TextView) findViewById(android.R.id.title)).setText("Add Task");
+			if(savedInstanceState == null) {
+				getSupportFragmentManager().beginTransaction()
+						.replace(R.id.content, TaskFragment.getInstance(null))
+						.commit();
+			}
 		}
 	}
 }

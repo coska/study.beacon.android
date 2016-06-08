@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -24,6 +25,10 @@ import com.coska.beacon.model.SignalCursorLoader;
 import com.coska.beacon.model.entity.Signal;
 
 public class BeaconSearchDialog extends AppCompatDialogFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+
+	public static void show(FragmentManager manager) {
+		new BeaconSearchDialog().show(manager, BeaconSearchDialog.class.getName());
+	}
 
 	private static final String target = BeaconFragment.class.getName();
 

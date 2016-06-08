@@ -28,6 +28,6 @@ public class ActionCursorLoader extends MockCursorLoader {
 	}
 
 	private Object[] getRow() {
-		return new Object[] { "My Action " + getString(), getLong(), getString() };
+		return new Object[] { "My Action " + getString(), random.nextInt(3), getString() };
 	}
 }

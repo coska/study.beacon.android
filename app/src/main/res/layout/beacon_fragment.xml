@@ -1,64 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout style="@style/Coska.Container"
+<android.support.design.widget.CoordinatorLayout android:id="@+id/coordinator"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:columnCount="2"
-	android:useDefaultMargins="true">
+	android:layout_height="match_parent">
 
-	<android.support.design.widget.TextInputLayout
+	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_columnSpan="2">
+		android:layout_height="wrap_content">
 
-		<android.support.design.widget.TextInputEditText
-			android:id="@+id/name"
-			style="@style/Coska.Text.Input"
+		<LinearLayout
+			style="@style/Coska.Container"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:hint="Name" />
-	</android.support.design.widget.TextInputLayout>
+			android:orientation="vertical">
 
-	<TextView
-		style="@style/Coska.Text.Caption"
-		android:layout_columnSpan="2"
-		android:text="Device Detail" />
+			<TextView
+				style="@style/Coska.Text.Caption"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Device Identifier" />
 
-	<TextView
-		style="@style/Coska.Text.Primary"
-		android:text="uuid" />
+			<android.support.v7.widget.CardView
+				style="@style/Task.Card"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
 
-	<TextView
-		android:id="@+id/uuid"
-		style="@style/Coska.Text.Secondary"
-		tools:text="uuid" />
+				<GridLayout
+					style="@style/Coska.Container"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:columnCount="2"
+					android:useDefaultMargins="true">
 
-	<TextView
-		style="@style/Coska.Text.Primary"
-		android:text="Major value" />
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="uuid"
+						android:textAllCaps="true" />
 
-	<TextView
-		android:id="@+id/major"
-		style="@style/Coska.Text.Secondary"
-		tools:text="8873" />
+					<TextView
+						android:id="@+id/uuid"
+						style="@style/Coska.Text.Secondary"
+						tools:text="uuid" />
 
-	<TextView
-		style="@style/Coska.Text.Primary"
-		android:text="Minor value" />
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="Major value" />
 
-	<TextView
-		android:id="@+id/minor"
-		style="@style/Coska.Text.Secondary"
-		tools:text="20784" />
+					<TextView
+						android:id="@+id/major"
+						style="@style/Coska.Text.Secondary"
+						tools:text="8873" />
 
-	<TextView
-		style="@style/Coska.Text.Primary"
-		android:text="Battery level" />
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="Minor value" />
 
-	<TextView
-		android:id="@+id/battery"
-		style="@style/Coska.Text.Secondary"
-		tools:text="96%" />
+					<TextView
+						android:id="@+id/minor"
+						style="@style/Coska.Text.Secondary"
+						tools:text="20784" />
+				</GridLayout>
 
-</GridLayout>
+			</android.support.v7.widget.CardView>
+
+			<TextView
+				style="@style/Coska.Text.Caption"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_columnSpan="2"
+				android:text="Device Detail" />
+
+			<android.support.v7.widget.CardView
+				style="@style/Task.Card"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<GridLayout
+					style="@style/Coska.Container"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:columnCount="2"
+					android:useDefaultMargins="true">
+
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="Distance" />
+
+					<TextView
+						android:id="@+id/distance"
+						style="@style/Coska.Text.Secondary"
+						tools:text="distance" />
+
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="Telemetry ver." />
+
+					<TextView
+						android:id="@+id/telemetry"
+						style="@style/Coska.Text.Secondary"
+						tools:text="telemetry" />
+
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="Battery level" />
+
+					<TextView
+						android:id="@+id/battery"
+						style="@style/Coska.Text.Secondary"
+						tools:text="battery" />
+
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="PDU count" />
+
+					<TextView
+						android:id="@+id/pdu_count"
+						style="@style/Coska.Text.Secondary"
+						tools:text="PDU Count" />
+
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="Uptime" />
+
+					<TextView
+						android:id="@+id/uptime"
+						style="@style/Coska.Text.Secondary"
+						tools:text="uptime" />
+
+					<TextView
+						style="@style/Coska.Text.Primary"
+						android:text="Time" />
+
+					<TextView
+						android:id="@+id/time"
+						style="@style/Coska.Text.Secondary"
+						tools:text="time" />
+				</GridLayout>
+
+			</android.support.v7.widget.CardView>
+
+		</LinearLayout>
+
+	</ScrollView>
+
+	<android.support.design.widget.FloatingActionButton
+		android:id="@+id/fab"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom|end"
+		android:layout_margin="16dp"
+		android:src="@mipmap/ic_action_bluetooth_searching" />
+</android.support.design.widget.CoordinatorLayout>

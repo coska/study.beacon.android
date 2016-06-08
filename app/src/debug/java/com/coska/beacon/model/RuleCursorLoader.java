@@ -28,6 +28,6 @@ public class RuleCursorLoader extends MockCursorLoader {
 	}
 
 	private Object[] getRow() {
-		return new Object[] { "My Rule " + getString(), getLong(), getString() };
+		return new Object[] { "My Rule " + getString(), random.nextInt(2), getString() };
 	}
 }

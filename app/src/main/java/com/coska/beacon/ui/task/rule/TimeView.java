@@ -73,4 +73,14 @@ public class TimeView extends RuleView implements OnClickListener, OnCheckedChan
 			pair.second.setVisibility(View.INVISIBLE);
 		}
 	}
+
+	@Override
+	public boolean validate() {
+		return true;
+	}
+
+	@Override
+	public String getConfiguration() {
+		return null;
+	}
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.widget.ArrayAdapter;
@@ -13,17 +14,8 @@ import com.coska.beacon.R;
 
 public class RuleOptionDialog extends AppCompatDialogFragment implements DialogInterface.OnClickListener {
 
-	private static final String BUNDLE_COUNT = "bundle_count";
-
-	protected static AppCompatDialogFragment getInstance(Integer count) {
-
-		Bundle bundle = new Bundle(1);
-		bundle.putInt(BUNDLE_COUNT, count == null ? 0 : count);
-
-		AppCompatDialogFragment fragment = new RuleOptionDialog();
-		fragment.setArguments(bundle);
-
-		return fragment;
+	protected static void show(FragmentManager manager) {
+		new RuleOptionDialog().show(manager, RuleOptionDialog.class.getName());
 	}
 
 	private static final int layout = android.R.layout.simple_list_item_1;
@@ -49,15 +41,13 @@ public class RuleOptionDialog extends AppCompatDialogFragment implements DialogI
 	public void onClick(DialogInterface dialog, int which) {
 
 		TaskFragment fragment = (TaskFragment) getFragmentManager().findFragmentByTag(target);
-		final int count = getArguments().getInt(BUNDLE_COUNT);
-
 		switch (which) {
 			case 0:
-				fragment.inflateRule(R.layout.task_rule_time, count);
+				fragment.inflateRule(R.layout.task_rule_time);
 				break;
 
 			case 1:
-				fragment.inflateRule(R.layout.task_rule_location, count);
+				fragment.inflateRule(R.layout.task_rule_location);
 				break;
 		}
 	}

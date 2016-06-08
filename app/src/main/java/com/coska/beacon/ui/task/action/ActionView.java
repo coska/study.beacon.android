@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 
-public class ActionView extends CardView {
+public abstract class ActionView extends CardView {
 
 	public ActionView(Context context) {
 		super(context);
@@ -17,4 +17,7 @@ public class ActionView extends CardView {
 	public ActionView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 	}
+
+	public abstract boolean validate();
+	public abstract String getConfiguration();
 }

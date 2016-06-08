@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public abstract class MockCursorLoader extends AsyncTaskLoader<Cursor> {
 
-	private final Random random = new Random();
+	protected final Random random = new Random();
 
 	private Cursor cache;
 	public MockCursorLoader(Context context) {

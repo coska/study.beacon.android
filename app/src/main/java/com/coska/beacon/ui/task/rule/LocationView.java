@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 public class LocationView extends RuleView {
+
 	public LocationView(Context context) {
 		super(context);
 	}
@@ -14,5 +15,15 @@ public class LocationView extends RuleView {
 
 	public LocationView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
+	}
+
+	@Override
+	public boolean validate() {
+		return true;
+	}
+
+	@Override
+	public String getConfiguration() {
+		return null;
 	}
 }

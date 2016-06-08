@@ -26,6 +26,8 @@
 			style="@style/Coska.Text.Primary"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:ellipsize="end"
+			android:maxLines="1"
 			tools:text="SAMPLE" />
 
 		<TextView
@@ -33,6 +35,8 @@
 			style="@style/Coska.Text.Secondary"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:ellipsize="end"
+			android:maxLines="1"
 			tools:text="SAMPLE" />
 
 	</LinearLayout>
