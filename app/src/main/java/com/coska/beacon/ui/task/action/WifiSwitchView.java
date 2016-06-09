@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 import android.widget.Switch;
 
 import com.coska.beacon.R;
+import com.coska.beacon.model.entity.action.Wifi;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 public class WifiSwitchView extends ActionView {
 
 	private Switch wifiSwitch;
+	private JSONObject json;
 
 	public WifiSwitchView(Context context) {
 		super(context);
@@ -30,6 +32,9 @@ public class WifiSwitchView extends ActionView {
 		super.onFinishInflate();
 
 		wifiSwitch = (Switch) findViewById(R.id.wifi_switch);
+		if(json != null) {
+			wifiSwitch.setChecked(json.optBoolean(Wifi.WIFI_STATUS));
+		}
 	}
 
 	@Override
@@ -38,9 +43,15 @@ public class WifiSwitchView extends ActionView {
 	}
 
 	@Override
+	public void setConfiguration(String configuration) throws JSONException {
+		json = new JSONObject(configuration);
+		wifiSwitch.setChecked(json.optBoolean(Wifi.WIFI_STATUS));
+	}
+
+	@Override
 	public String getConfiguration() {
 		try {
-			return new JSONObject()
+			return (json == null ? new JSONObject() : json)
 					.put("switch", wifiSwitch.isChecked())
 					.toString();
 

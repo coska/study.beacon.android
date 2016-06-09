@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 public class PhoneCall extends Action {
 
+	public static final String NAME = "name";
 	public static final String DIAL_NUMBER = "dial_number";
 
 	protected PhoneCall(JSONObject json) {

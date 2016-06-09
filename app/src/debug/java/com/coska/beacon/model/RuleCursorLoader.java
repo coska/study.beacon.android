@@ -8,7 +8,7 @@ import com.coska.beacon.model.entity.rule.Rule;
 
 public class RuleCursorLoader extends MockCursorLoader {
 
-	private static final String[] columns = new String[] { Rule.name, Rule.type, Rule.configuration };
+	private static final String[] columns = new String[] { Rule.type, Rule.configuration };
 
 	public RuleCursorLoader(Context context) {
 		super(context);
@@ -28,6 +28,6 @@ public class RuleCursorLoader extends MockCursorLoader {
 	}
 
 	private Object[] getRow() {
-		return new Object[] { "My Rule " + getString(), random.nextInt(2), getString() };
+		return new Object[] { random.nextInt(2), getString() };
 	}
 }

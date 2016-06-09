@@ -8,7 +8,7 @@ import com.coska.beacon.model.entity.action.Action;
 
 public class ActionCursorLoader extends MockCursorLoader {
 
-	private static final String[] columns = new String[] { Action.name, Action.type, Action.configuration };
+	private static final String[] columns = new String[] { Action.type, Action.configuration };
 
 	public ActionCursorLoader(Context context) {
 		super(context);
@@ -28,6 +28,6 @@ public class ActionCursorLoader extends MockCursorLoader {
 	}
 
 	private Object[] getRow() {
-		return new Object[] { "My Action " + getString(), random.nextInt(3), getString() };
+		return new Object[] { random.nextInt(3), getString() };
 	}
 }

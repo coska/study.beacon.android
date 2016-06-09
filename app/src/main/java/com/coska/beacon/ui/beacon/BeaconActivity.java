@@ -13,15 +13,15 @@ import com.coska.beacon.ui.base.BaseFragment;
 
 public class BeaconActivity extends BaseActivity {
 
-	private static final String BEACON_UUID = "_beacon_uuid";
+	private static final String BEACON_ID = "_beacon_id";
 
 	public static void startActivity(Context context) {
 		context.startActivity(new Intent(context, BeaconActivity.class));
 	}
 
-	public static void startActivity(Context context, String uuid) {
+	public static void startActivity(Context context, long id) {
 		context.startActivity(new Intent(context, BeaconActivity.class)
-			.putExtra(BEACON_UUID, uuid));
+				.putExtra(BEACON_ID, id));
 	}
 
 	@Override
@@ -34,16 +34,22 @@ public class BeaconActivity extends BaseActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		String uuid = getIntent().getStringExtra(BEACON_UUID);
-		if(uuid == null) {
-			((TextView) findViewById(android.R.id.title)).setText("Add Beacon");
+		BaseFragment fragment = null;
+		if(getIntent().hasExtra(BEACON_ID)) {
+
+			((TextView) findViewById(android.R.id.title)).setText("Edit Beacon");
+			if(savedInstanceState == null) {
+				fragment = BeaconFragment.getInstance(getIntent().getLongExtra(BEACON_ID, -1));
+			}
 
 		} else {
-			((TextView) findViewById(android.R.id.title)).setText("Edit Beacon");
+			((TextView) findViewById(android.R.id.title)).setText("Add Beacon");
+			if(savedInstanceState == null) {
+				fragment = BeaconFragment.getInstance(null);
+			}
 		}
 
-		if(savedInstanceState == null) {
-			BaseFragment fragment = BeaconFragment.getInstance(uuid);
+		if(fragment != null) {
 			getSupportFragmentManager().beginTransaction()
 					.replace(R.id.content, fragment, BeaconFragment.class.getName())
 					.commit();

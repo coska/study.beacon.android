@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.coska.beacon.R;
 import com.coska.beacon.ui.base.BaseActivity;
+import com.coska.beacon.ui.base.BaseFragment;
 
 public class TaskActivity extends BaseActivity {
 
@@ -33,22 +34,25 @@ public class TaskActivity extends BaseActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+		BaseFragment fragment = null;
 		if(getIntent().hasExtra(TASK_ID)) {
 
 			((TextView) findViewById(android.R.id.title)).setText("Edit Task");
 			if(savedInstanceState == null) {
-				getSupportFragmentManager().beginTransaction()
-						.replace(R.id.content, TaskFragment.getInstance(getIntent().getLongExtra(TASK_ID, -1)))
-						.commit();
+				fragment = TaskFragment.getInstance(getIntent().getLongExtra(TASK_ID, -1));
 			}
 
 		} else {
 			((TextView) findViewById(android.R.id.title)).setText("Add Task");
 			if(savedInstanceState == null) {
-				getSupportFragmentManager().beginTransaction()
-						.replace(R.id.content, TaskFragment.getInstance(null))
-						.commit();
+				fragment = TaskFragment.getInstance(null);
 			}
+		}
+
+		if(fragment != null) {
+			getSupportFragmentManager().beginTransaction()
+					.replace(R.id.content, fragment, TaskFragment.class.getName())
+					.commit();
 		}
 	}
 }

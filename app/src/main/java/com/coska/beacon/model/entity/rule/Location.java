@@ -31,7 +31,7 @@ public class Location extends Rule {
 
 	@Override
 	public boolean isMatch(Context context) {
-
+/*
 		GoogleApiClient client = new GoogleApiClient.Builder(context)
 				.addApi(LocationServices.API)
 				.build();
@@ -46,5 +46,7 @@ public class Location extends Rule {
 		} finally {
 			client.disconnect();
 		}
+*/
+		return true;
 	}
 }

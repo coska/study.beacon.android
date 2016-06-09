@@ -46,7 +46,7 @@ public class Database extends SQLiteOpenHelper {
 				+ Beacon.minor + " TEXT);");
 
 		db.execSQL("CREATE VIEW " + Beacon._table + "_view AS "
-				+ " SELECT * FROM " + Beacon._table + " INNER JOIN " + Signal._table
+				+ " SELECT * FROM " + Beacon._table + " LEFT JOIN " + Signal._table
 				+ " ON " + Beacon._table + "." + Beacon.uuid + "=" + Signal._table + "." + Signal.uuid
 				+ " AND " + Beacon._table + "." + Beacon.major + "=" + Signal._table + "." + Signal.major
 				+ " AND " + Beacon._table + "." + Beacon.minor + "=" + Signal._table + "." + Signal.minor);
@@ -62,7 +62,6 @@ public class Database extends SQLiteOpenHelper {
 		db.execSQL("CREATE TABLE " + Action._table + " ("
 				+ Action._ID + " INTEGER PRIMARY KEY, "
 				+ Action._task_id + " INTEGER NOT NULL, "
-				+ Action.name + " TEXT, "
 				+ Action.type + " INTEGER NOT NULL, "
 //				+ Action.configuration + " TEXT);");
 				+ Action.configuration + " TEXT, "
@@ -72,12 +71,19 @@ public class Database extends SQLiteOpenHelper {
 		db.execSQL("CREATE TABLE " + Rule._table + " ("
 				+ Rule._ID + " INTEGER PRIMARY KEY, "
 				+ Rule._task_id + " INTEGER NOT NULL, "
-				+ Rule.name + " TEXT, "
 				+ Rule.type + " INTEGER NOT NULL, "
 //				+ Rule.configuration + " TEXT);");
 				+ Rule.configuration + " TEXT, "
 				+ " FOREIGN KEY(" + Rule._task_id + ")"
 				+ " REFERENCES " + Task._table + "(" + Task._ID + ") ON DELETE CASCADE);");
+
+		db.execSQL("CREATE VIEW " + Task._table + "_view AS SELECT * FROM " + Task._table
+					+ " LEFT JOIN (SELECT " + Beacon.uuid + ", " + Beacon._ID + " FROM " + Beacon._table + ") AS " + Beacon._table
+						+ " ON " + Task._table + "." + Task._beacon_id + "=" + Beacon._table + "." + Beacon._ID
+					+ " LEFT JOIN (SELECT COUNT(*) AS rules, " + Rule._task_id + " FROM " + Rule._table + " GROUP BY " + Rule._task_id + ") AS " + Rule._table
+						+ " ON " + Task._table + "." + Task._ID + "=" + Rule._table + "." + Rule._task_id
+					+ " LEFT JOIN (SELECT COUNT(*) AS actions, " + Action._task_id + " FROM " + Action._table + " GROUP BY " + Action._task_id + ") AS " + Action._table
+						+ " ON " + Task._table + "." + Task._ID + "=" + Action._table + "." + Action._task_id);
 
 //		db.execSQL("CREATE TRIGGER " + Beacon._table + "_trigger BEFORE DELETE ON " + Beacon._table
 //				+ " FOR EACH ROW BEGIN "

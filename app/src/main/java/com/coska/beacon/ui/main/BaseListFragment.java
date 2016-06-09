@@ -3,6 +3,7 @@ package com.coska.beacon.ui.main;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.LoaderManager;
@@ -60,7 +61,10 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 
 			@Override
 			public void onSwiped(ViewHolder viewHolder, int swipeDir) {
-				recyclerView.getAdapter().notifyItemRemoved(viewHolder.getAdapterPosition());
+				Uri uri = getUri().buildUpon()
+						.appendPath(Long.toString(viewHolder.getItemId()))
+						.build();
+				getContext().getContentResolver().delete(uri, null, null);
 			}
 		}).attachToRecyclerView(recyclerView);
 
@@ -97,9 +101,14 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 		protected final Cursor cursor;
 		private View.OnClickListener listener;
 
+		private final int id;
+
 		protected Adapter(Cursor cursor, View.OnClickListener listener) {
+			setHasStableIds(true);
 			this.cursor = cursor;
 			this.listener = listener;
+
+			this.id = cursor.getColumnIndex(BaseColumns._ID);
 		}
 
 		@Override
@@ -110,6 +119,11 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 		}
 
 		protected abstract void onBindViewHolder(VH holder, Cursor cursor);
+
+		@Override
+		public long getItemId(int position) {
+			return cursor.moveToPosition(position) ? cursor.getLong(id) : -1;
+		}
 
 		@Override
 		public int getItemCount() {
@@ -132,7 +146,7 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 		}
 
 		protected int getIcon(int position) {
-			switch (position%10) {
+			switch ((int) (getItemId(position)%10)) {
 				default:
 				case 0: return R.mipmap.a0;
 				case 1: return R.mipmap.a1;

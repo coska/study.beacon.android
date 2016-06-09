@@ -2,8 +2,6 @@ package com.coska.beacon.ui.main;
 
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.coska.beacon.R;
-import com.coska.beacon.model.BeaconCursorLoader;
 import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.ui.beacon.BeaconActivity;
@@ -30,19 +27,13 @@ public class BeaconsFragment extends BaseListFragment implements View.OnClickLis
 	}
 
 	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		super.onCreateLoader(id, args);
-		return new BeaconCursorLoader(getContext());
-	}
-
-	@Override
 	public void onClick(View view) {
 
 		Cursor cursor = ((Adapter) recyclerView.getAdapter()).cursor;
 		if(cursor.moveToPosition(recyclerView.getChildAdapterPosition(view))) {
 
-			String uuid = cursor.getString(cursor.getColumnIndex(Beacon.uuid));
-			BeaconActivity.startActivity(getActivity(), uuid);
+			long id = cursor.getLong(cursor.getColumnIndex(Beacon._ID));
+			BeaconActivity.startActivity(getActivity(), id);
 		}
 	}
 

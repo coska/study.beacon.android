@@ -1,7 +1,6 @@
 package com.coska.beacon.ui.beacon;
 
 import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,21 +24,23 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.coska.beacon.R;
-import com.coska.beacon.model.BeaconCursorLoader;
 import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.model.entity.Signal;
 import com.coska.beacon.ui.base.BaseFragment;
 
+import static com.coska.beacon.model.BeaconProvider.PATH_BEACON;
+import static com.coska.beacon.model.BeaconProvider.buildUri;
+
 public class BeaconFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
-	private static final String BEACON_UUID = "_beacon_uuid";
+	private static final String BEACON_ID = "_beacon_id";
 
-	public static BaseFragment getInstance(String uuid) {
+	public static BaseFragment getInstance(Long beaconId) {
 
 		Bundle bundle = new Bundle(1);
-		if(uuid != null) {
-			bundle.putString(BEACON_UUID, uuid);
+		if(beaconId != null) {
+			bundle.putLong(BEACON_ID, beaconId);
 		}
 
 		BaseFragment fragment = new BeaconFragment();
@@ -48,14 +49,7 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 		return fragment;
 	}
 
-	private static final class BeaconLoader extends CursorLoader {
-		public BeaconLoader(Context context, String uuid) {
-			super(context, uri, null, Beacon.uuid + "=?", new String[] { uuid }, null);
-		}
-	}
-
 	private static final int LOADER_ID = ++_internal_loader_count;
-	private static final Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_BEACON);
 
 	private EditText name;
 
@@ -142,7 +136,7 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 
 		View fab = view.findViewById(R.id.fab);
 
-		if(getArguments().containsKey(BEACON_UUID)) {
+		if(getArguments().containsKey(BEACON_ID)) {
 			fab.setVisibility(View.GONE);
 			getLoaderManager().initLoader(LOADER_ID, null, this);
 
@@ -181,8 +175,7 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-//		return new BeaconLoader(getContext(), bundle.getString(BEACON_UUID));
-		return new BeaconCursorLoader(getContext());
+		return new CursorLoader(getContext(), buildUri(PATH_BEACON, getArguments().getLong(BEACON_ID)), null, null, null, null);
 	}
 
 	@Override

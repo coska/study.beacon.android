@@ -3,12 +3,12 @@ package com.coska.beacon.ui.task;
 import android.animation.LayoutTransition;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
@@ -24,11 +24,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.coska.beacon.R;
-import com.coska.beacon.model.ActionCursorLoader;
-import com.coska.beacon.model.BeaconCursorLoader;
-import com.coska.beacon.model.BeaconProvider;
-import com.coska.beacon.model.RuleCursorLoader;
-import com.coska.beacon.model.TaskCursorLoader;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.model.entity.Task;
 import com.coska.beacon.model.entity.action.Action;
@@ -36,6 +31,14 @@ import com.coska.beacon.model.entity.rule.Rule;
 import com.coska.beacon.ui.base.BaseFragment;
 import com.coska.beacon.ui.task.action.ActionView;
 import com.coska.beacon.ui.task.rule.RuleView;
+
+import org.json.JSONException;
+
+import static com.coska.beacon.model.BeaconProvider.PATH_ACTION;
+import static com.coska.beacon.model.BeaconProvider.PATH_BEACON;
+import static com.coska.beacon.model.BeaconProvider.PATH_RULE;
+import static com.coska.beacon.model.BeaconProvider.PATH_TASK;
+import static com.coska.beacon.model.BeaconProvider.buildUri;
 
 public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
@@ -58,8 +61,6 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 	private static final int BEACON_LOADER_ID = ++_internal_loader_count;
 	private static final int RULE_LOADER_ID = ++_internal_loader_count;
 	private static final int ACTION_LOADER_ID = ++_internal_loader_count;
-
-	private static final Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_TASK);
 
 	private static final class Adapter extends SimpleCursorAdapter {
 		public Adapter(Context context, Cursor cursor) {
@@ -158,27 +159,30 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		if(getArguments().containsKey(TASK_ID)) {
 
-			container.setLayoutTransition(null);
 			loadCount = 4;
-
 			LoaderManager manager = getLoaderManager();
 			manager.initLoader(TASK_LOADER_ID, null, this);
 			manager.initLoader(BEACON_LOADER_ID, null, this);
 			manager.initLoader(RULE_LOADER_ID, null, this);
 			manager.initLoader(ACTION_LOADER_ID, null, this);
+
+		} else {
+
+			loadCount = 4;
+			getLoaderManager().initLoader(BEACON_LOADER_ID, null, this);
 		}
 	}
 
 	protected void inflateRule(int resId) {
 		addRule.setGravity(Gravity.RIGHT);
 		View view = LayoutInflater.from(getContext()).inflate(resId, container, false);
-		container.addView(view, container.indexOfChild(addRule)-1);
+		container.addView(view, container.indexOfChild(addRule));
 	}
 
 	protected void inflateAction(int resId) {
 		addAction.setGravity(Gravity.RIGHT);
 		View view = LayoutInflater.from(getContext()).inflate(resId, container, false);
-		container.addView(view, container.indexOfChild(addAction)-1);
+		container.addView(view, container.indexOfChild(addAction));
 	}
 
 	@Override
@@ -197,19 +201,19 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-//		return new CursorLoader(getContext(), uri, null, null, null, null);
 
+		final long taskId = getArguments().getLong(TASK_ID);
 		if(id == TASK_LOADER_ID) {
-			return new TaskCursorLoader(getContext());
+			return new CursorLoader(getContext(), buildUri(PATH_TASK, taskId), null, null, null, null);
 
 		} else if(id == BEACON_LOADER_ID) {
-			return new BeaconCursorLoader(getContext());
+			return new CursorLoader(getContext(), buildUri(PATH_BEACON), null, null, null, null);
 
 		} else if(id == RULE_LOADER_ID) {
-			return new RuleCursorLoader(getContext());
+			return new CursorLoader(getContext(), buildUri(PATH_TASK, taskId, PATH_RULE), null, null, null, null);
 
 		} else if(id == ACTION_LOADER_ID) {
-			return new ActionCursorLoader(getContext());
+			return new CursorLoader(getContext(), buildUri(PATH_TASK, taskId, PATH_ACTION), null, null, null, null);
 
 		} else throw new IllegalArgumentException();
 	}
@@ -232,21 +236,28 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 			final int index = container.indexOfChild(addRule);
 			LayoutInflater inflater = LayoutInflater.from(getContext());
 
-			final int typeIndex = cursor.getColumnIndex(Rule.type);
+			final int type = cursor.getColumnIndex(Rule.type);
+			final int configuration = cursor.getColumnIndex(Rule.configuration);
 			for(int i = 0; cursor.moveToPosition(i); i++) {
-				switch (cursor.getInt(typeIndex)) {
-					case 0: {
-						View view = inflater.inflate(R.layout.task_rule_time, container, false);
-						container.addView(view, index + i);
-						break;
-					}
 
-					case 1: {
-						View view = inflater.inflate(R.layout.task_rule_location, container, false);
-						container.addView(view, index + i);
+				RuleView ruleView = null;
+				switch (cursor.getInt(type)) {
+					case 0:
+						try {
+							(ruleView = (RuleView) inflater.inflate(R.layout.task_rule_time, container, false))
+									.setConfiguration(cursor.getString(configuration));
+						} catch (JSONException ignore) { }
 						break;
-					}
+
+					case 1:
+						try {
+							(ruleView = (RuleView) inflater.inflate(R.layout.task_rule_location, container, false))
+									.setConfiguration(cursor.getString(configuration));
+						} catch (JSONException ignore) { }
+						break;
 				}
+
+				container.addView(ruleView, index+i);
 			}
 
 		} else if(id == ACTION_LOADER_ID) {
@@ -254,31 +265,39 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 			final int index = container.indexOfChild(addAction);
 			LayoutInflater inflater = LayoutInflater.from(getContext());
 
-			final int typeIndex = cursor.getColumnIndex(Action.type);
+			final int type = cursor.getColumnIndex(Action.type);
+			final int configuration = cursor.getColumnIndex(Action.configuration);
 			for(int i = 0; cursor.moveToPosition(i); i++) {
-				switch (cursor.getInt(typeIndex)) {
-					case 0: {
-						View view = inflater.inflate(R.layout.task_action_phone_call, container, false);
-						container.addView(view, index+i);
-						break;
-					}
 
-					case 1: {
-						View view = inflater.inflate(R.layout.task_action_message, container, false);
-						container.addView(view, index+i);
+				ActionView actionView = null;
+				switch (cursor.getInt(type)) {
+					case 0:
+						try {
+							(actionView = (ActionView) inflater.inflate(R.layout.task_action_message, container, false))
+									.setConfiguration(cursor.getString(configuration));
+						} catch(JSONException ignore) { }
 						break;
-					}
 
-					case 2: {
-						View view = inflater.inflate(R.layout.task_action_wifi, container, false);
-						container.addView(view, index+i);
+					case 1:
+						try {
+							(actionView = (ActionView) inflater.inflate(R.layout.task_action_phone_call, container, false))
+									.setConfiguration(cursor.getString(configuration));
+						} catch(JSONException ignore) { }
 						break;
-					}
+
+					case 2:
+						try {
+							(actionView = (ActionView) inflater.inflate(R.layout.task_action_wifi, container, false))
+									.setConfiguration(cursor.getString(configuration));
+						} catch(JSONException ignore) { }
+						break;
 				}
+
+				container.addView(actionView, index+i);
 			}
 		}
 
-		if(--loadCount == 4) {
+		if(--loadCount == 0) {
 			container.setLayoutTransition(new LayoutTransition());
 		}
 	}

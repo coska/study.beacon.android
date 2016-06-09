@@ -4,6 +4,13 @@
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item name="colorAccent">@color/colorAccent</item>
+		<item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
+	</style>
+
+	<style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="colorAccent">@color/colorAccent</item>
 	</style>
 
 	<style name="Coska" />
@@ -46,7 +53,7 @@
 
 	<style name="Task.Card" parent="Coska.Container">
 		<item name="android:layout_margin">10dp</item>
-		<item name="cardCornerRadius">4dp</item>
+		<item name="cardCornerRadius">2dp</item>
 	</style>
 
 	<style name="Task.Card.Title" parent="Coska.Text.Secondary">

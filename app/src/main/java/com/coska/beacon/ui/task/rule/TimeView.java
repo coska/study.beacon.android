@@ -3,7 +3,6 @@ package com.coska.beacon.ui.task.rule;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.Context;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.GridLayout;
 import android.util.AttributeSet;
 import android.view.View;
@@ -15,8 +14,17 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.coska.beacon.R;
+import com.coska.beacon.model.entity.rule.Time;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class TimeView extends RuleView implements OnClickListener, OnCheckedChangeListener {
+
+	private CheckBox[] cbx = new CheckBox[7];
+	private TextView[] from = new TextView[7];
+	private TextView[] to = new TextView[7];
+	private JSONObject json = null;
 
 	public TimeView(Context context) {
 		super(context);
@@ -35,42 +43,43 @@ public class TimeView extends RuleView implements OnClickListener, OnCheckedChan
 		super.onFinishInflate();
 
 		GridLayout gridLayout = (GridLayout) findViewById(R.id.grid);
-		for(int i = 0, count = gridLayout.getChildCount(); i < count; i+=3) {
-			CheckBox cbx = (CheckBox) gridLayout.getChildAt(i);
-			View from = gridLayout.getChildAt(i+1);
-			View to = gridLayout.getChildAt(i+2);
+		for(int row = 0; row < 7; row++) {
 
-			cbx.setOnCheckedChangeListener(this);
-			from.setOnClickListener(this);
-			to.setOnClickListener(this);
+			cbx[row] = (CheckBox) gridLayout.getChildAt(row*3);
+			cbx[row].setOnCheckedChangeListener(this);
+			cbx[row].setTag(row);
 
-			cbx.setTag(Pair.create(from, to));
+			from[row] = (TextView) gridLayout.getChildAt(row*3+1);
+			from[row].setOnClickListener(this);
+
+			to[row] = (TextView) gridLayout.getChildAt(row*3+2);
+			to[row].setOnClickListener(this);
 		}
 	}
 
 	@Override
 	public void onClick(final View view) {
 
-		TimePickerDialog dialog = new TimePickerDialog(getContext(), new OnTimeSetListener() {
+		final int time = Integer.parseInt(((TextView) view).getText().toString());
+		new TimePickerDialog(getContext(), new OnTimeSetListener() {
 			@Override
 			public void onTimeSet(TimePicker picker, int hourOfDay, int minute) {
-				((TextView) view).setText(hourOfDay + ":" + minute);
+				((TextView) view).setText(String.valueOf(hourOfDay*100 + minute));
 			}
-		}, 12, 0, true);
-		dialog.show();
+		}, time/100, time%100, true).show();
 	}
 
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-		Pair<View, View> pair = (Pair<View, View>) buttonView.getTag();
+		final int index = (Integer) buttonView.getTag();
 		if(isChecked) {
-			pair.first.setVisibility(View.VISIBLE);
-			pair.second.setVisibility(View.VISIBLE);
+			from[index].setVisibility(View.VISIBLE);
+			to[index].setVisibility(View.VISIBLE);
 
 		} else {
-			pair.first.setVisibility(View.INVISIBLE);
-			pair.second.setVisibility(View.INVISIBLE);
+			from[index].setVisibility(View.INVISIBLE);
+			to[index].setVisibility(View.INVISIBLE);
 		}
 	}
 
@@ -80,7 +89,43 @@ public class TimeView extends RuleView implements OnClickListener, OnCheckedChan
 	}
 
 	@Override
+	public void setConfiguration(String configuration) throws JSONException {
+		json = new JSONObject(configuration);
+		for(int i = 0; i < Time._WEEK.length; i++) {
+			init(i, Time._WEEK[i]);
+		}
+	}
+
+	private void init(int index, String key) {
+
+		if(json.has(key)) {
+			cbx[index].setChecked(true);
+
+			String[] array = json.optString(key).split("[^0-9]");
+			from[index].setText(array[0]);
+			to[index].setText(array[1]);
+		}
+	}
+
+	@Override
 	public String getConfiguration() {
-		return null;
+		try {
+			if(json != null) {
+				for(int i = 0; i < Time._WEEK.length; i++) {
+					load(i, Time._WEEK[i]);
+				}
+
+				return json.toString();
+			}
+
+		} catch (JSONException ignore) { }
+
+		return "";
+	}
+
+	private void load(int index, String key) throws JSONException {
+		if(cbx[index].isChecked()) {
+			json.put(key, from[index].getText() + ":" + to[index].getText());
+		}
 	}
 }

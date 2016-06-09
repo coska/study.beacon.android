@@ -3,6 +3,8 @@ package com.coska.beacon.ui.task.rule;
 import android.content.Context;
 import android.util.AttributeSet;
 
+import org.json.JSONException;
+
 public class LocationView extends RuleView {
 
 	public LocationView(Context context) {
@@ -20,6 +22,11 @@ public class LocationView extends RuleView {
 	@Override
 	public boolean validate() {
 		return true;
+	}
+
+	@Override
+	public void setConfiguration(String configuration) throws JSONException {
+
 	}
 
 	@Override
