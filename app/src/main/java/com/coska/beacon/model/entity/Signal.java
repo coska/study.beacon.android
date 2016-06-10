@@ -10,6 +10,7 @@ public class Signal implements BaseColumns {
 	public static final String major = "major";
 	public static final String minor = "minor";
 
+	public static final String name = "name";
 	public static final String distance = "distance";
 	public static final String telemetry = "telemetry";
 	public static final String battery = "battery";

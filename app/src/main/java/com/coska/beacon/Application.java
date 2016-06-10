@@ -94,6 +94,7 @@ public class Application extends android.app.Application implements BootstrapNot
 						case 0:
 					}
 
+					cv.put(Signal.name, beacon.getBluetoothName());
 					cv.put(Signal.distance, beacon.getDistance());
 
 					List<Long> extra = beacon.getExtraDataFields();

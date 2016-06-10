@@ -1,8 +1,11 @@
 package com.coska.beacon.ui.task;
 
 import android.animation.LayoutTransition;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -12,6 +15,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,13 +47,21 @@ import static com.coska.beacon.model.BeaconProvider.buildUri;
 public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
 	private static final String TASK_ID = "_task_id";
+	private static final String BEACON_ID = "_beacon_id";
 
-	public static BaseFragment getInstance(Long taskId) {
+	public static BaseFragment getInstance() {
 
-		Bundle bundle = new Bundle(1);
-		if(taskId != null) {
-			bundle.putLong(TASK_ID, taskId);
-		}
+		BaseFragment fragment = new TaskFragment();
+		fragment.setArguments(new Bundle());
+
+		return fragment;
+	}
+
+	public static BaseFragment getInstance(long taskId, long beaconId) {
+
+		Bundle bundle = new Bundle(2);
+		bundle.putLong(TASK_ID, taskId);
+		bundle.putLong(BEACON_ID, beaconId);
 
 		BaseFragment fragment = new TaskFragment();
 		fragment.setArguments(bundle);
@@ -90,6 +102,17 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		switch (item.getItemId()) {
 			case R.id.accept:
+
+				if(TextUtils.isEmpty(name.getText())) {
+					new AlertDialog.Builder(getContext())
+							.setCancelable(false)
+							.setTitle("Required field")
+							.setMessage("Please provide task name")
+							.setPositiveButton(android.R.string.ok, null)
+							.show();
+					return true;
+				}
+
 				for(int i = 0, count = container.getChildCount(); i < count; i++) {
 
 					View view = container.getChildAt(i);
@@ -105,19 +128,33 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 					}
 				}
 
-				getActivity().finish();
-/*
-				ContentValues cv = new ContentValues(1);
-				cv.put(Beacon.name, name.getText().toString());
+				ContentResolver resolver = getContext().getContentResolver();
+
+				ContentValues task = new ContentValues(1);
+				task.put(Task.name, name.getText().toString());
+				task.put(Task._beacon_id, addBeacon.getSelectedItemId());
+
+				final long taskId;
 
 				Bundle bundle = getArguments();
 				if(bundle.containsKey(TASK_ID)) {
-					getContext().getContentResolver().update(uri, cv, Beacon.uuid + "=?", new String[] { uuid });
+					taskId = bundle.getLong(TASK_ID);
+					resolver.update(buildUri(PATH_TASK, taskId), task, Task._ID + "=?", new String[] { Long.toString(taskId) });
 
 				} else {
-					getContext().getContentResolver().insert(uri, cv);
+					Uri uri = resolver.insert(buildUri(PATH_BEACON, addBeacon.getSelectedItemId(), PATH_TASK), task);
+					taskId = Long.parseLong(uri.getLastPathSegment());
 				}
-*/
+
+				for(int i = 0, count = container.getChildCount(); i < count; i++) {
+
+					View view = container.getChildAt(i);
+					if(view instanceof EntityView) {
+						((EntityView) view).persist(taskId);
+					}
+				}
+
+				getActivity().finish();
 				return true;
 
 			default:
@@ -168,7 +205,7 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 
 		} else {
 
-			loadCount = 4;
+			loadCount = 1;
 			getLoaderManager().initLoader(BEACON_LOADER_ID, null, this);
 		}
 	}
@@ -229,7 +266,25 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 			} else throw new IllegalStateException();
 
 		} else if(id == BEACON_LOADER_ID) {
+
+			int index = -1;
+
+			Bundle bundle = getArguments();
+			if(bundle.containsKey(BEACON_ID)) {
+				final long beaconId = bundle.getLong(BEACON_ID);
+				final int idIndex = cursor.getColumnIndex(Beacon._ID);
+				for(int i = 0; cursor.moveToPosition(i); i++) {
+					if(cursor.getLong(idIndex) == beaconId) {
+						index = i;
+						break;
+					}
+				}
+			}
+
 			addBeacon.setAdapter(new Adapter(getContext(), cursor));
+			if(0 <= index) {
+				addBeacon.setSelection(index);
+			}
 
 		} else if(id == RULE_LOADER_ID) {
 
@@ -237,6 +292,7 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 			LayoutInflater inflater = LayoutInflater.from(getContext());
 
 			final int type = cursor.getColumnIndex(Rule.type);
+			final int idIndex = cursor.getColumnIndex(Rule._ID);
 			final int configuration = cursor.getColumnIndex(Rule.configuration);
 			for(int i = 0; cursor.moveToPosition(i); i++) {
 
@@ -245,14 +301,14 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 					case 0:
 						try {
 							(ruleView = (RuleView) inflater.inflate(R.layout.task_rule_time, container, false))
-									.setConfiguration(cursor.getString(configuration));
+									.setConfiguration(cursor.getLong(idIndex), cursor.getString(configuration));
 						} catch (JSONException ignore) { }
 						break;
 
 					case 1:
 						try {
 							(ruleView = (RuleView) inflater.inflate(R.layout.task_rule_location, container, false))
-									.setConfiguration(cursor.getString(configuration));
+									.setConfiguration(cursor.getLong(idIndex), cursor.getString(configuration));
 						} catch (JSONException ignore) { }
 						break;
 				}
@@ -266,6 +322,7 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 			LayoutInflater inflater = LayoutInflater.from(getContext());
 
 			final int type = cursor.getColumnIndex(Action.type);
+			final int idIndex = cursor.getColumnIndex(Action._ID);
 			final int configuration = cursor.getColumnIndex(Action.configuration);
 			for(int i = 0; cursor.moveToPosition(i); i++) {
 
@@ -274,21 +331,21 @@ public class TaskFragment extends BaseFragment implements LoaderManager.LoaderCa
 					case 0:
 						try {
 							(actionView = (ActionView) inflater.inflate(R.layout.task_action_message, container, false))
-									.setConfiguration(cursor.getString(configuration));
+									.setConfiguration(cursor.getLong(idIndex), cursor.getString(configuration));
 						} catch(JSONException ignore) { }
 						break;
 
 					case 1:
 						try {
 							(actionView = (ActionView) inflater.inflate(R.layout.task_action_phone_call, container, false))
-									.setConfiguration(cursor.getString(configuration));
+									.setConfiguration(cursor.getLong(idIndex), cursor.getString(configuration));
 						} catch(JSONException ignore) { }
 						break;
 
 					case 2:
 						try {
 							(actionView = (ActionView) inflater.inflate(R.layout.task_action_wifi, container, false))
-									.setConfiguration(cursor.getString(configuration));
+									.setConfiguration(cursor.getLong(idIndex), cursor.getString(configuration));
 						} catch(JSONException ignore) { }
 						break;
 				}

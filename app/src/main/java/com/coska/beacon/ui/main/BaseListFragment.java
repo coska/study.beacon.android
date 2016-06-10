@@ -61,10 +61,9 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 
 			@Override
 			public void onSwiped(ViewHolder viewHolder, int swipeDir) {
-				Uri uri = getUri().buildUpon()
+				onDelete(getUri().buildUpon()
 						.appendPath(Long.toString(viewHolder.getItemId()))
-						.build();
-				getContext().getContentResolver().delete(uri, null, null);
+						.build());
 			}
 		}).attachToRecyclerView(recyclerView);
 
@@ -72,6 +71,10 @@ public abstract class BaseListFragment extends BaseFragment implements LoaderMan
 		message = (TextView) view.findViewById(android.R.id.message);
 
 		getLoaderManager().initLoader(LOADER_ID, null, this);
+	}
+
+	protected void onDelete(Uri uri) {
+		getContext().getContentResolver().delete(uri, null, null);
 	}
 
 	@Override

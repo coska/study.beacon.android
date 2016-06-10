@@ -1,19 +1,26 @@
 package com.coska.beacon.ui.task.action;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.Switch;
 
 import com.coska.beacon.R;
+import com.coska.beacon.model.entity.action.Action;
 import com.coska.beacon.model.entity.action.Wifi;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.coska.beacon.model.BeaconProvider.PATH_ACTION;
+import static com.coska.beacon.model.BeaconProvider.PATH_TASK;
+import static com.coska.beacon.model.BeaconProvider.buildUri;
+
 public class WifiSwitchView extends ActionView {
 
 	private Switch wifiSwitch;
-	private JSONObject json;
+	private long id = -1;
 
 	public WifiSwitchView(Context context) {
 		super(context);
@@ -32,9 +39,6 @@ public class WifiSwitchView extends ActionView {
 		super.onFinishInflate();
 
 		wifiSwitch = (Switch) findViewById(R.id.wifi_switch);
-		if(json != null) {
-			wifiSwitch.setChecked(json.optBoolean(Wifi.WIFI_STATUS));
-		}
 	}
 
 	@Override
@@ -43,20 +47,27 @@ public class WifiSwitchView extends ActionView {
 	}
 
 	@Override
-	public void setConfiguration(String configuration) throws JSONException {
-		json = new JSONObject(configuration);
+	public void setConfiguration(long id, String configuration) throws JSONException {
+		this.id = id;
+
+		JSONObject json = new JSONObject(configuration);
 		wifiSwitch.setChecked(json.optBoolean(Wifi.WIFI_STATUS));
 	}
 
 	@Override
-	public String getConfiguration() {
-		try {
-			return (json == null ? new JSONObject() : json)
-					.put("switch", wifiSwitch.isChecked())
-					.toString();
+	public int persist(long taskId) {
+		ContentValues cv = new Action.Builder()
+				.type(Action.Type.WIFI)
+				.set(Wifi.WIFI_STATUS, Boolean.toString(wifiSwitch.isChecked()))
+				.build(taskId);
 
-		} catch (JSONException ignore) {
-			return "";
+		ContentResolver resolver = getContext().getContentResolver();
+		if(0 <= id) {
+			return resolver.update(buildUri(PATH_ACTION, id), cv, null, null);
+
+		} else {
+			resolver.insert(buildUri(PATH_TASK, taskId, PATH_ACTION), cv);
+			return 1;
 		}
 	}
 }

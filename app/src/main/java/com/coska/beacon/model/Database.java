@@ -31,6 +31,7 @@ public class Database extends SQLiteOpenHelper {
 				+ Signal.uuid + " TEXT NOT NULL, "
 				+ Signal.major + " TEXT DEFAULT '', "
 				+ Signal.minor + " TEXT DEFAULT '', "
+				+ Signal.name + " TEXT, "
 				+ Signal.distance + " REAL, "
 				+ Signal.telemetry + " INTEGER, "
 				+ Signal.battery + " INTEGER, "
@@ -78,8 +79,8 @@ public class Database extends SQLiteOpenHelper {
 				+ " REFERENCES " + Task._table + "(" + Task._ID + ") ON DELETE CASCADE);");
 
 		db.execSQL("CREATE VIEW " + Task._table + "_view AS SELECT * FROM " + Task._table
-					+ " LEFT JOIN (SELECT " + Beacon.uuid + ", " + Beacon._ID + " FROM " + Beacon._table + ") AS " + Beacon._table
-						+ " ON " + Task._table + "." + Task._beacon_id + "=" + Beacon._table + "." + Beacon._ID
+					+ " LEFT JOIN (SELECT " + Beacon.name + " AS beacon_name, " + Beacon._ID + " AS beacon_id FROM " + Beacon._table + ") AS " + Beacon._table
+						+ " ON " + Task._table + "." + Task._beacon_id + "=" + Beacon._table + "." + Beacon._table + Beacon._ID
 					+ " LEFT JOIN (SELECT COUNT(*) AS rules, " + Rule._task_id + " FROM " + Rule._table + " GROUP BY " + Rule._task_id + ") AS " + Rule._table
 						+ " ON " + Task._table + "." + Task._ID + "=" + Rule._table + "." + Rule._task_id
 					+ " LEFT JOIN (SELECT COUNT(*) AS actions, " + Action._task_id + " FROM " + Action._table + " GROUP BY " + Action._task_id + ") AS " + Action._table

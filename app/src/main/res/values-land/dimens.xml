@@ -1,0 +1,5 @@
+<resources>
+
+	<integer name="beacon_grid_column">4</integer>
+
+</resources>

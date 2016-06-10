@@ -3,6 +3,9 @@ package com.coska.beacon.ui.main;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,8 @@ import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.ui.beacon.BeaconActivity;
 
+import static android.graphics.Typeface.BOLD;
+
 public class BeaconsFragment extends BaseListFragment implements View.OnClickListener {
 
 	@Override
@@ -24,6 +29,12 @@ public class BeaconsFragment extends BaseListFragment implements View.OnClickLis
 	@Override
 	protected Uri getUri() {
 		return BeaconProvider.buildUri(BeaconProvider.PATH_BEACON);
+	}
+
+	@Override
+	protected void onDelete(Uri uri) {
+		super.onDelete(uri);
+		getContext().getContentResolver().notifyChange(BeaconProvider.buildUri(BeaconProvider.PATH_TASK), null);
 	}
 
 	@Override
@@ -63,7 +74,11 @@ public class BeaconsFragment extends BaseListFragment implements View.OnClickLis
 		public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
 			holder.icon.setImageResource(getIcon(cursor.getPosition()));
 			holder.text1.setText(cursor.getString(name));
-			holder.text2.setText(cursor.getString(uuid));
+
+			SpannableStringBuilder builder = new SpannableStringBuilder()
+					.append("UUID: ").append(cursor.getString(uuid));
+			builder.setSpan(new StyleSpan(BOLD), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			holder.text2.setText(builder);
 		}
 	}
 
@@ -81,6 +96,7 @@ public class BeaconsFragment extends BaseListFragment implements View.OnClickLis
 
 			text1 = (TextView) itemView.findViewById(android.R.id.text1);
 			text2 = (TextView) itemView.findViewById(android.R.id.text2);
+			text2.setMaxLines(1);
 		}
 	}
 }

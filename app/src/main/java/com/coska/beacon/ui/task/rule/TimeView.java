@@ -2,6 +2,7 @@ package com.coska.beacon.ui.task.rule;
 
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.support.v7.widget.GridLayout;
 import android.util.AttributeSet;
@@ -14,17 +15,24 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.coska.beacon.R;
+import com.coska.beacon.model.entity.rule.Rule;
 import com.coska.beacon.model.entity.rule.Time;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Locale;
+
+import static com.coska.beacon.model.BeaconProvider.PATH_RULE;
+import static com.coska.beacon.model.BeaconProvider.PATH_TASK;
+import static com.coska.beacon.model.BeaconProvider.buildUri;
 
 public class TimeView extends RuleView implements OnClickListener, OnCheckedChangeListener {
 
 	private CheckBox[] cbx = new CheckBox[7];
 	private TextView[] from = new TextView[7];
 	private TextView[] to = new TextView[7];
-	private JSONObject json = null;
+	private long id = -1;
 
 	public TimeView(Context context) {
 		super(context);
@@ -64,7 +72,7 @@ public class TimeView extends RuleView implements OnClickListener, OnCheckedChan
 		new TimePickerDialog(getContext(), new OnTimeSetListener() {
 			@Override
 			public void onTimeSet(TimePicker picker, int hourOfDay, int minute) {
-				((TextView) view).setText(String.valueOf(hourOfDay*100 + minute));
+				((TextView) view).setText(String.format(Locale.CANADA, "%04d", hourOfDay*100 + minute));
 			}
 		}, time/100, time%100, true).show();
 	}
@@ -85,47 +93,51 @@ public class TimeView extends RuleView implements OnClickListener, OnCheckedChan
 
 	@Override
 	public boolean validate() {
-		return true;
-	}
 
-	@Override
-	public void setConfiguration(String configuration) throws JSONException {
-		json = new JSONObject(configuration);
-		for(int i = 0; i < Time._WEEK.length; i++) {
-			init(i, Time._WEEK[i]);
-		}
-	}
-
-	private void init(int index, String key) {
-
-		if(json.has(key)) {
-			cbx[index].setChecked(true);
-
-			String[] array = json.optString(key).split("[^0-9]");
-			from[index].setText(array[0]);
-			to[index].setText(array[1]);
-		}
-	}
-
-	@Override
-	public String getConfiguration() {
-		try {
-			if(json != null) {
-				for(int i = 0; i < Time._WEEK.length; i++) {
-					load(i, Time._WEEK[i]);
-				}
-
-				return json.toString();
+		for(int i = 0; i < 7; i++) {
+			if(cbx[i].isChecked()) {
+				return true;
 			}
+		}
 
-		} catch (JSONException ignore) { }
-
-		return "";
+		return false;
 	}
 
-	private void load(int index, String key) throws JSONException {
-		if(cbx[index].isChecked()) {
-			json.put(key, from[index].getText() + ":" + to[index].getText());
+	@Override
+	public void setConfiguration(long id, String configuration) throws JSONException {
+		this.id = id;
+
+		JSONObject json = new JSONObject(configuration);
+		for(int i = 0; i < Time._WEEK.length; i++) {
+
+			if(json.has(Time._WEEK[i])) {
+				cbx[i].setChecked(true);
+
+				String[] array = json.optString(Time._WEEK[i]).split("[^0-9]");
+				from[i].setText(array[0]);
+				to[i].setText(array[1]);
+			}
+		}
+	}
+
+	@Override
+	public int persist(long taskId) {
+
+		Rule.Builder builder = new Rule.Builder()
+				.type(Rule.Type.Time);
+		for(int i = 0; i < Time._WEEK.length; i++) {
+			if(cbx[i].isChecked()) {
+				builder.set(Time._WEEK[i], from[i].getText() + ":" + to[i].getText());
+			}
+		}
+
+		ContentResolver resolver = getContext().getContentResolver();
+		if(0 <= id) {
+			return resolver.update(buildUri(PATH_RULE, id), builder.build(taskId), null, null);
+
+		} else {
+			resolver.insert(buildUri(PATH_TASK, taskId, PATH_RULE), builder.build(taskId));
+			return 1;
 		}
 	}
 }

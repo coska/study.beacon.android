@@ -1,11 +1,13 @@
 package com.coska.beacon.ui.base;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.coska.beacon.R;
+import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.Database;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.model.entity.Signal;
@@ -43,13 +45,13 @@ public class BaseActivity extends AppCompatActivity {
 					for(int i = 0, beaconSize = random.nextInt(5)+5; i < beaconSize; i++) {
 						ContentValues beacon = new ContentValues();
 						beacon.put(Beacon.uuid, UUID.randomUUID().toString().toUpperCase());
-						beacon.put(Beacon.name, Long.toString(Math.abs(random.nextLong()), 36).toUpperCase());
+						beacon.put(Beacon.name, "My Beacon " + getName(random));
 						beacon.put(Beacon.major, Integer.toString(Math.abs(random.nextInt())));
 						beacon.put(Beacon.minor, Integer.toString(Math.abs(random.nextInt())));
 
 						final long beaconId = db.insert(Beacon._table, null, beacon);
 
-						beacon.remove(Beacon.name);
+						beacon.put(Signal.name, "Signal " + getName(random));
 						beacon.put(Signal.distance, Math.abs(random.nextDouble()));
 						beacon.put(Signal.telemetry, random.nextInt(10)+1);
 						beacon.put(Signal.battery, Math.abs(random.nextLong()));
@@ -60,7 +62,7 @@ public class BaseActivity extends AppCompatActivity {
 						for(int j = 0, taskSize = random.nextInt(5)+5; j < taskSize; j++) {
 							ContentValues task = new ContentValues();
 							task.put(Task._beacon_id, beaconId);
-							task.put(Task.name, Long.toString(Math.abs(random.nextLong()), 36).toUpperCase());
+							task.put(Task.name, "My Task " + getName(random));
 
 							final long taskId = db.insert(Task._table, null, task);
 
@@ -69,14 +71,12 @@ public class BaseActivity extends AppCompatActivity {
 								Rule.Builder builder = new Rule.Builder();
 								switch (Rule.Type.values()[random.nextInt(2)]) {
 									case Time:
-										builder.type(Rule.Type.Time)
-												.set(Time.MONDAY, (random.nextInt(24)*100 + random.nextInt(60)) + ":" + (random.nextInt(24)*100 + random.nextInt(60)))
-												.set(Time.TUESDAY, (random.nextInt(24)*100 + random.nextInt(60)) + ":" + (random.nextInt(24)*100 + random.nextInt(60)))
-												.set(Time.WEDNESDAY, (random.nextInt(24)*100 + random.nextInt(60)) + ":" + (random.nextInt(24)*100 + random.nextInt(60)))
-												.set(Time.THURSDAY, (random.nextInt(24)*100 + random.nextInt(60)) + ":" + (random.nextInt(24)*100 + random.nextInt(60)))
-												.set(Time.FRIDAY, (random.nextInt(24)*100 + random.nextInt(60)) + ":" + (random.nextInt(24)*100 + random.nextInt(60)))
-												.set(Time.SATURDAY, (random.nextInt(24)*100 + random.nextInt(60)) + ":" + (random.nextInt(24)*100 + random.nextInt(60)))
-												.set(Time.SUNDAY, (random.nextInt(24)*100 + random.nextInt(60)) + ":" + (random.nextInt(24)*100 + random.nextInt(60)));
+										builder.type(Rule.Type.Time);
+										for(String day:Time._WEEK) {
+											if(random.nextBoolean()) {
+												builder.set(day, formatTime(random.nextInt(24)*100 + random.nextInt(60), random.nextInt(24)*100 + random.nextInt(60)));
+											}
+										}
 										break;
 
 									case Location:
@@ -96,14 +96,14 @@ public class BaseActivity extends AppCompatActivity {
 								switch (Action.Type.values()[random.nextInt(3)]) {
 									case MESSAGE:
 										builder.type(Action.Type.MESSAGE)
-												.set(Message.NAME, Long.toString(Math.abs(random.nextLong()), 36).toUpperCase())
+												.set(Message.NAME, "My Message " + getName(random))
 												.set(Message.DIAL_NUMBER, String.format(Locale.US, "%09d", random.nextInt(1000000000)))
 												.set(Message.SMS_MESSAGE, Long.toString(Math.abs(random.nextLong()), 36));
 										break;
 
 									case PHONE_CALL:
 										builder.type(Action.Type.PHONE_CALL)
-												.set(PhoneCall.NAME, Long.toString(Math.abs(random.nextLong()), 36).toUpperCase())
+												.set(PhoneCall.NAME, "My Phone call " + getName(random))
 												.set(PhoneCall.DIAL_NUMBER, String.format(Locale.US, "%09d", random.nextInt(1000000000)));
 										break;
 
@@ -124,6 +124,10 @@ public class BaseActivity extends AppCompatActivity {
 
 					db.close();
 					database.close();
+
+					ContentResolver resolver = getContentResolver();
+					resolver.notifyChange(BeaconProvider.buildUri(BeaconProvider.PATH_BEACON), null);
+					resolver.notifyChange(BeaconProvider.buildUri(BeaconProvider.PATH_TASK), null);
 				}
 				return true;
 
@@ -134,5 +138,13 @@ public class BaseActivity extends AppCompatActivity {
 			default:
 				return super.onOptionsItemSelected(item);
 		}
+	}
+
+	private static String getName(Random random) {
+		return Integer.toString(Math.abs(random.nextInt()), 36).toUpperCase();
+	}
+
+	private static String formatTime(int t1, int t2) {
+		return String.format(Locale.CANADA, "%04d:%04d", Math.min(t1, t2), Math.max(t1, t2));
 	}
 }

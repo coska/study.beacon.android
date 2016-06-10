@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout android:id="@+id/coordinator"
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:coska="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
@@ -26,41 +27,47 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<GridLayout
+				<android.support.v7.widget.GridLayout
 					style="@style/Coska.Container"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
-					android:columnCount="2"
-					android:useDefaultMargins="true">
+					coska:columnCount="@integer/beacon_grid_column"
+					coska:useDefaultMargins="true">
 
 					<TextView
 						style="@style/Coska.Text.Primary"
 						android:text="uuid"
-						android:textAllCaps="true" />
+						android:textAllCaps="true"
+						coska:layout_columnWeight="1" />
 
 					<TextView
 						android:id="@+id/uuid"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="uuid" />
 
 					<TextView
 						style="@style/Coska.Text.Primary"
-						android:text="Major value" />
+						android:text="Major value"
+						coska:layout_columnWeight="1" />
 
 					<TextView
 						android:id="@+id/major"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="8873" />
 
 					<TextView
 						style="@style/Coska.Text.Primary"
-						android:text="Minor value" />
+						android:text="Minor value"
+						coska:layout_columnWeight="1" />
 
 					<TextView
 						android:id="@+id/minor"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="20784" />
-				</GridLayout>
+				</android.support.v7.widget.GridLayout>
 
 			</android.support.v7.widget.CardView>
 
@@ -68,7 +75,6 @@
 				style="@style/Coska.Text.Caption"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_columnSpan="2"
 				android:text="Device Detail" />
 
 			<android.support.v7.widget.CardView
@@ -76,67 +82,80 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<GridLayout
+				<android.support.v7.widget.GridLayout
 					style="@style/Coska.Container"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
-					android:columnCount="2"
-					android:useDefaultMargins="true">
+					coska:columnCount="@integer/beacon_grid_column"
+					coska:useDefaultMargins="true">
 
 					<TextView
 						style="@style/Coska.Text.Primary"
-						android:text="Distance" />
+						android:text="Distance"
+						coska:layout_columnWeight="1" />
 
 					<TextView
+
 						android:id="@+id/distance"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="distance" />
 
 					<TextView
 						style="@style/Coska.Text.Primary"
-						android:text="Telemetry ver." />
+						android:text="Telemetry ver."
+						coska:layout_columnWeight="1" />
 
 					<TextView
 						android:id="@+id/telemetry"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="telemetry" />
 
 					<TextView
 						style="@style/Coska.Text.Primary"
-						android:text="Battery level" />
+						android:text="Battery level"
+						coska:layout_columnWeight="1" />
 
 					<TextView
 						android:id="@+id/battery"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="battery" />
 
 					<TextView
 						style="@style/Coska.Text.Primary"
-						android:text="PDU count" />
+						android:text="PDU count"
+						coska:layout_columnWeight="1" />
 
 					<TextView
 						android:id="@+id/pdu_count"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="PDU Count" />
 
 					<TextView
 						style="@style/Coska.Text.Primary"
-						android:text="Uptime" />
+						android:text="Uptime"
+						coska:layout_columnWeight="1" />
 
 					<TextView
 						android:id="@+id/uptime"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="uptime" />
 
 					<TextView
 						style="@style/Coska.Text.Primary"
-						android:text="Time" />
+						android:text="Time"
+						coska:layout_columnWeight="1" />
 
 					<TextView
 						android:id="@+id/time"
 						style="@style/Coska.Text.Secondary"
+						coska:layout_columnWeight="1"
 						tools:text="time" />
-				</GridLayout>
+				</android.support.v7.widget.GridLayout>
 
 			</android.support.v7.widget.CardView>
 

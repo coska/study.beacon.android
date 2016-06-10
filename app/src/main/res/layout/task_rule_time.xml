@@ -33,14 +33,14 @@
 			<TextView
 				android:id="@+id/mon_from"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
 			<TextView
 				android:id="@+id/mon_to"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
@@ -52,14 +52,14 @@
 			<TextView
 				android:id="@+id/tue_from"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
 			<TextView
 				android:id="@+id/tue_to"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
@@ -71,14 +71,14 @@
 			<TextView
 				android:id="@+id/wed_from"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
 			<TextView
 				android:id="@+id/wed_to"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
@@ -90,14 +90,14 @@
 			<TextView
 				android:id="@+id/thu_from"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
 			<TextView
 				android:id="@+id/thu_to"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
@@ -109,14 +109,14 @@
 			<TextView
 				android:id="@+id/fri_from"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
 			<TextView
 				android:id="@+id/fri_to"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
@@ -128,14 +128,14 @@
 			<TextView
 				android:id="@+id/sat_from"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
 			<TextView
 				android:id="@+id/sat_to"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
@@ -147,14 +147,14 @@
 			<TextView
 				android:id="@+id/sun_from"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 
 			<TextView
 				android:id="@+id/sun_to"
 				style="@style/Task.Card.Button"
-				android:text="16:00"
+				android:text="0000"
 				android:visibility="invisible"
 				coska:layout_columnWeight="1" />
 		</android.support.v7.widget.GridLayout>

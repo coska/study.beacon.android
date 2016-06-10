@@ -14,14 +14,16 @@ import com.coska.beacon.ui.base.BaseFragment;
 public class TaskActivity extends BaseActivity {
 
 	private static final String TASK_ID = "_task_id";
+	private static final String BEACON_ID = "_beacon_id";
 
 	public static void startActivity(Context context) {
 		context.startActivity(new Intent(context, TaskActivity.class));
 	}
 
-	public static void startActivity(Context context, long id) {
+	public static void startActivity(Context context, long taskId, long beaconId) {
 		context.startActivity(new Intent(context, TaskActivity.class)
-				.putExtra(TASK_ID, id));
+				.putExtra(TASK_ID, taskId)
+				.putExtra(BEACON_ID, beaconId));
 	}
 
 	@Override
@@ -34,18 +36,20 @@ public class TaskActivity extends BaseActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+		Intent intent = getIntent();
+
 		BaseFragment fragment = null;
-		if(getIntent().hasExtra(TASK_ID)) {
+		if(intent.hasExtra(TASK_ID)) {
 
 			((TextView) findViewById(android.R.id.title)).setText("Edit Task");
 			if(savedInstanceState == null) {
-				fragment = TaskFragment.getInstance(getIntent().getLongExtra(TASK_ID, -1));
+				fragment = TaskFragment.getInstance(intent.getLongExtra(TASK_ID, -1), intent.getLongExtra(BEACON_ID, -1));
 			}
 
 		} else {
 			((TextView) findViewById(android.R.id.title)).setText("Add Task");
 			if(savedInstanceState == null) {
-				fragment = TaskFragment.getInstance(null);
+				fragment = TaskFragment.getInstance();
 			}
 		}
 

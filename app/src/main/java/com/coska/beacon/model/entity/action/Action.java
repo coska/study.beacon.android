@@ -28,16 +28,6 @@ public abstract class Action implements BaseColumns {
 			return this;
 		}
 
-		public Builder set(String key, int value) {
-			try {
-				json.put(key, value);
-			} catch (JSONException e) {
-				throw new IllegalArgumentException(e);
-			}
-
-			return this;
-		}
-
 		public Builder set(String key, String value) {
 			try {
 				json.put(key, value);

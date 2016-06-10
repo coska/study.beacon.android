@@ -38,8 +38,9 @@ public class TasksFragment extends BaseListFragment implements View.OnClickListe
 		Cursor cursor = ((Adapter) recyclerView.getAdapter()).cursor;
 		if(cursor.moveToPosition(recyclerView.getChildAdapterPosition(view))) {
 
-			long id = cursor.getLong(cursor.getColumnIndex(Task._ID));
-			TaskActivity.startActivity(getActivity(), id);
+			long taskId = cursor.getLong(cursor.getColumnIndex(Task._ID));
+			long beaconId = cursor.getLong(cursor.getColumnIndex(Beacon._table + Beacon._ID));
+			TaskActivity.startActivity(getActivity(), taskId, beaconId);
 		}
 	}
 
@@ -48,14 +49,14 @@ public class TasksFragment extends BaseListFragment implements View.OnClickListe
 		private final int name;
 		private final int rules;
 		private final int actions;
-		private final int uuid;
+		private final int beaconName;
 
 		private TasksAdapter(Cursor cursor, View.OnClickListener listener) {
 			super(cursor, listener);
 			name = cursor.getColumnIndex(Task.name);
 			rules = cursor.getColumnIndex("rules");
 			actions = cursor.getColumnIndex("actions");
-			uuid = cursor.getColumnIndex(Beacon.uuid);
+			beaconName = cursor.getColumnIndex("beacon_name");
 		}
 
 		@Override
@@ -74,14 +75,16 @@ public class TasksFragment extends BaseListFragment implements View.OnClickListe
 			holder.text1.setText(cursor.getString(name));
 
 			SpannableStringBuilder builder = new SpannableStringBuilder();
-			builder.append("Rules: ").append(cursor.getString(rules))
+			builder.append("Rules: ").append(cursor.getString(rules) == null ? "0" : cursor.getString(rules))
 					.setSpan(new StyleSpan(BOLD), 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-			final int length = builder.length();
-			builder.append(", Action: ").append(cursor.getString(actions))
+			int length = builder.length();
+			builder.append(", Action: ").append(cursor.getString(actions) == null ? "0" : cursor.getString(actions))
 					.setSpan(new StyleSpan(BOLD), length+2, length+8, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-			builder.append("\n").append(cursor.getString(uuid));
+			length = builder.length();
+			builder.append("\nBeacon: ").append(cursor.getString(beaconName))
+					.setSpan(new StyleSpan(BOLD), length, length+7, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			holder.text2.setText(builder);
 		}
 	}

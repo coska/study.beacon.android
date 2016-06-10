@@ -1,8 +1,9 @@
 package com.coska.beacon.ui.beacon;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -24,7 +25,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.coska.beacon.R;
-import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.model.entity.Signal;
 import com.coska.beacon.ui.base.BaseFragment;
@@ -75,25 +75,42 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 					new AlertDialog.Builder(getContext())
 							.setCancelable(false)
 							.setTitle("Required field")
-							.setMessage("Please fill out all the input field")
+							.setMessage("Please provide task name")
 							.setPositiveButton(android.R.string.ok, null)
 							.show();
 					return true;
 				}
 
-				getActivity().finish();
-/*
+				if(TextUtils.isEmpty(uuid.getText())
+						&& TextUtils.isEmpty(major.getText())
+						&& TextUtils.isEmpty(minor.getText())) {
+					new AlertDialog.Builder(getContext())
+							.setCancelable(false)
+							.setTitle("Required field")
+							.setMessage("Please select beacon from searching dialog")
+							.setPositiveButton(android.R.string.ok, null)
+							.show();
+					return true;
+				}
+
+				ContentResolver resolver = getContext().getContentResolver();
+
 				ContentValues cv = new ContentValues(1);
 				cv.put(Beacon.name, name.getText().toString());
 
-				String uuid = getArguments().getString(BEACON_UUID);
-				if(TextUtils.isEmpty(uuid)) {
-					getContext().getContentResolver().insert(uri, cv);
+				Bundle bundle = getArguments();
+				if(bundle.containsKey(BEACON_ID)) {
+					resolver.update(buildUri(PATH_BEACON, bundle.getLong(BEACON_ID)), cv, null, null);
 
 				} else {
-					getContext().getContentResolver().update(uri, cv, Beacon.uuid + "=?", new String[] { uuid });
+					cv.put(Beacon.uuid, uuid.getText().toString());
+					cv.put(Beacon.major, major.getText().toString());
+					cv.put(Beacon.minor, minor.getText().toString());
+
+					resolver.insert(buildUri(PATH_BEACON), cv);
 				}
-*/
+
+				getActivity().finish();
 				return true;
 
 			default:
