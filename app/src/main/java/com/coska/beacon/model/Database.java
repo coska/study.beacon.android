@@ -27,35 +27,29 @@ public class Database extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 
 		db.execSQL("CREATE TABLE " + Signal._table + " ("
+				+ Signal._ID + " INTEGER PRIMARY KEY, "
 				+ Signal.time + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-				+ Signal.uuid + " TEXT NOT NULL, "
-				+ Signal.major + " TEXT DEFAULT '', "
-				+ Signal.minor + " TEXT DEFAULT '', "
+				+ Signal.identifier1 + " TEXT NOT NULL, "
+				+ Signal.identifier2 + " TEXT DEFAULT '', "
+				+ Signal.identifier3 + " TEXT DEFAULT '', "
 				+ Signal.name + " TEXT, "
 				+ Signal.distance + " REAL, "
 				+ Signal.telemetry + " INTEGER, "
 				+ Signal.battery + " INTEGER, "
 				+ Signal.pduCount + " INTEGER, "
 				+ Signal.uptime + " INTEGER, "
-				+ " UNIQUE (" + Signal.uuid + ", " + Signal.major + ", " + Signal.minor + ") ON CONFLICT REPLACE);");
+				+ " UNIQUE (" + Signal.identifier1 + ", " + Signal.identifier2 + ", " + Signal.identifier3 + ") ON CONFLICT REPLACE);");
 
 		db.execSQL("CREATE TABLE " + Beacon._table + " ("
 				+ Beacon._ID + " INTEGER PRIMARY KEY, "
-				+ Beacon.uuid + " TEXT NOT NULL UNIQUE, "
-				+ Beacon.name + " TEXT, "
-				+ Beacon.major + " TEXT, "
-				+ Beacon.minor + " TEXT);");
-
-		db.execSQL("CREATE VIEW " + Beacon._table + "_view AS "
-				+ " SELECT * FROM " + Beacon._table + " LEFT JOIN " + Signal._table
-				+ " ON " + Beacon._table + "." + Beacon.uuid + "=" + Signal._table + "." + Signal.uuid
-				+ " AND " + Beacon._table + "." + Beacon.major + "=" + Signal._table + "." + Signal.major
-				+ " AND " + Beacon._table + "." + Beacon.minor + "=" + Signal._table + "." + Signal.minor);
+				+ Beacon.name + " TEXT NOT NULL, "
+				+ Beacon.identifier1 + " TEXT NOT NULL UNIQUE, "
+				+ Beacon.identifier2 + " TEXT, "
+				+ Beacon.identifier3 + " TEXT);");
 
 		db.execSQL("CREATE TABLE " + Task._table + " ("
 				+ Task._ID + " INTEGER PRIMARY KEY, "
 				+ Task._beacon_id + " INTEGER NOT NULL, "
-//				+ Task.name + " TEXT);");
 				+ Task.name + " TEXT, "
 				+ " FOREIGN KEY(" + Task._beacon_id + ")"
 				+ " REFERENCES " + Beacon._table + "(" + Beacon._ID + ") ON DELETE CASCADE);");
@@ -64,7 +58,6 @@ public class Database extends SQLiteOpenHelper {
 				+ Action._ID + " INTEGER PRIMARY KEY, "
 				+ Action._task_id + " INTEGER NOT NULL, "
 				+ Action.type + " INTEGER NOT NULL, "
-//				+ Action.configuration + " TEXT);");
 				+ Action.configuration + " TEXT, "
 				+ " FOREIGN KEY(" + Action._task_id + ")"
 				+ " REFERENCES " + Task._table + "(" + Task._ID + ") ON DELETE CASCADE);");
@@ -73,7 +66,6 @@ public class Database extends SQLiteOpenHelper {
 				+ Rule._ID + " INTEGER PRIMARY KEY, "
 				+ Rule._task_id + " INTEGER NOT NULL, "
 				+ Rule.type + " INTEGER NOT NULL, "
-//				+ Rule.configuration + " TEXT);");
 				+ Rule.configuration + " TEXT, "
 				+ " FOREIGN KEY(" + Rule._task_id + ")"
 				+ " REFERENCES " + Task._table + "(" + Task._ID + ") ON DELETE CASCADE);");
@@ -85,17 +77,6 @@ public class Database extends SQLiteOpenHelper {
 						+ " ON " + Task._table + "." + Task._ID + "=" + Rule._table + "." + Rule._task_id
 					+ " LEFT JOIN (SELECT COUNT(*) AS actions, " + Action._task_id + " FROM " + Action._table + " GROUP BY " + Action._task_id + ") AS " + Action._table
 						+ " ON " + Task._table + "." + Task._ID + "=" + Action._table + "." + Action._task_id);
-
-//		db.execSQL("CREATE TRIGGER " + Beacon._table + "_trigger BEFORE DELETE ON " + Beacon._table
-//				+ " FOR EACH ROW BEGIN "
-//					+ " DELETE FROM " + Task._table + " WHERE OLD." + Beacon._ID + "=" + Task._table + "." + Task._beacon_id
-//				+ "; END;");
-
-//		db.execSQL("CREATE TRIGGER " + Task._table + "_trigger BEFORE DELETE ON " + Task._table
-//				+ " FOR EACH ROW BEGIN "
-//				+ " DELETE FROM " + Action._table + " WHERE OLD." + Task._ID + "=" + Action._table + "." + Action._task_id + ";"
-//				+ " DELETE FROM " + Rule._table + " WHERE OLD." + Task._ID + "=" + Rule._table + "." + Rule._task_id + ";"
-//				+ " END;");
 	}
 
 	@Override

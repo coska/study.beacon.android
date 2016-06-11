@@ -44,18 +44,18 @@ public class BaseActivity extends AppCompatActivity {
 
 					for(int i = 0, beaconSize = random.nextInt(5)+5; i < beaconSize; i++) {
 						ContentValues beacon = new ContentValues();
-						beacon.put(Beacon.uuid, UUID.randomUUID().toString().toUpperCase());
 						beacon.put(Beacon.name, "My Beacon " + getName(random));
-						beacon.put(Beacon.major, Integer.toString(Math.abs(random.nextInt())));
-						beacon.put(Beacon.minor, Integer.toString(Math.abs(random.nextInt())));
+						beacon.put(Beacon.identifier1, UUID.randomUUID().toString().toUpperCase());
+						beacon.put(Beacon.identifier2, Integer.toString(Math.abs(random.nextInt())));
+						beacon.put(Beacon.identifier3, Integer.toString(Math.abs(random.nextInt())));
 
 						final long beaconId = db.insert(Beacon._table, null, beacon);
 
 						beacon.put(Signal.name, "Signal " + getName(random));
-						beacon.put(Signal.distance, Math.abs(random.nextDouble()));
+						beacon.put(Signal.distance, random.nextInt(100)/1000d);
 						beacon.put(Signal.telemetry, random.nextInt(10)+1);
-						beacon.put(Signal.battery, Math.abs(random.nextLong()));
-						beacon.put(Signal.pduCount, Math.abs(random.nextLong()));
+						beacon.put(Signal.battery, random.nextInt(100)/1000d);
+						beacon.put(Signal.pduCount, random.nextInt(10000));
 						beacon.put(Signal.uptime, Math.abs(random.nextLong()));
 						db.insert(Signal._table, null, beacon);
 

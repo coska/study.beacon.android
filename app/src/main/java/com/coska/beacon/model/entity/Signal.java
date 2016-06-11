@@ -6,9 +6,9 @@ public class Signal implements BaseColumns {
 
 	public static final String _table = "signal";
 
-	public static final String uuid = "uuid";
-	public static final String major = "major";
-	public static final String minor = "minor";
+	public static final String identifier1 = "identifier_1";
+	public static final String identifier2 = "identifier_2";
+	public static final String identifier3 = "identifier_3";
 
 	public static final String name = "name";
 	public static final String distance = "distance";

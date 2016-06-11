@@ -51,13 +51,13 @@ public class BeaconsFragment extends BaseListFragment implements View.OnClickLis
 	private static final class BeaconsAdapter extends Adapter<ViewHolder> {
 
 		private final int name;
-		private final int uuid;
+		private final int identifier1;
 
 		private BeaconsAdapter(Cursor cursor, View.OnClickListener listener) {
 			super(cursor, listener);
 
 			this.name = cursor.getColumnIndex(Beacon.name);
-			this.uuid = cursor.getColumnIndex(Beacon.uuid);
+			this.identifier1 = cursor.getColumnIndex(Beacon.identifier1);
 		}
 
 		@Override
@@ -76,8 +76,8 @@ public class BeaconsFragment extends BaseListFragment implements View.OnClickLis
 			holder.text1.setText(cursor.getString(name));
 
 			SpannableStringBuilder builder = new SpannableStringBuilder()
-					.append("UUID: ").append(cursor.getString(uuid));
-			builder.setSpan(new StyleSpan(BOLD), 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+					.append("Namespace ID: ").append(cursor.getString(identifier1));
+			builder.setSpan(new StyleSpan(BOLD), 0, 12, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 			holder.text2.setText(builder);
 		}
 	}

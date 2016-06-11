@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.text.TextUtils;
 
 import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Beacon;
@@ -20,11 +19,11 @@ import static com.coska.beacon.model.BeaconProvider.PATH_TASK;
 
 public class TaskService extends IntentService {
 
-	private static final String BUNDLE_UUID = "_bundle_uuid";
+	private static final String BUNDLE_IDENTIFIER = "_bundle_identifier";
 
-	public static void startService(Context context, String uuid) {
+	public static void startService(Context context, String... identifier) {
 		context.startService(new Intent(context, TaskService.class)
-			.putExtra(BUNDLE_UUID, uuid));
+			.putExtra(BUNDLE_IDENTIFIER, identifier));
 	}
 
 	public TaskService() {
@@ -34,19 +33,26 @@ public class TaskService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
-		String uuid = intent.getStringExtra(BUNDLE_UUID);
-		if(TextUtils.isEmpty(uuid)) {
-			validateBeacons();
+		if(intent.hasExtra(BUNDLE_IDENTIFIER)) {
+			validateBeacon(intent.getStringExtra(BUNDLE_IDENTIFIER));
 
 		} else {
-			validateBeacon(uuid);
+			validateBeacons();
 		}
 	}
 
-	private void validateBeacon(String uuid) {
+	private void validateBeacon(String... identifier) {
+
+		String where = "";
+		switch (identifier.length) {
+			default: where += " AND " + Beacon.identifier3 + "=?";
+			case 2: where += " AND " + Beacon.identifier2 + "=?";
+			case 1: where += " AND " + Beacon.identifier1 + "=?";
+			case 0:
+		}
 
 		Uri beaconUri = BeaconProvider.buildUri(PATH_BEACON);
-		Cursor cursor = getContentResolver().query(beaconUri, null, Beacon.uuid + "=?", new String[]{ uuid }, null);
+		Cursor cursor = getContentResolver().query(beaconUri, null, where.substring(4), identifier, null);
 		for(int i = 0; cursor != null && cursor.moveToPosition(i); i++) {
 			validateTasks(cursor.getLong(cursor.getColumnIndex(Beacon._ID)));
 		}

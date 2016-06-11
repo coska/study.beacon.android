@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -24,12 +25,18 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.coska.beacon.Application;
 import com.coska.beacon.R;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.model.entity.Signal;
 import com.coska.beacon.ui.base.BaseFragment;
 
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 import static com.coska.beacon.model.BeaconProvider.PATH_BEACON;
+import static com.coska.beacon.model.BeaconProvider.PATH_SIGNAL;
 import static com.coska.beacon.model.BeaconProvider.buildUri;
 
 public class BeaconFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
@@ -49,11 +56,16 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 		return fragment;
 	}
 
-	private static final int LOADER_ID = ++_internal_loader_count;
+	private static final int BEACON_LOADER_ID = ++_internal_loader_count;
+	protected static final int SIGNAL_LOADER_ID = ++_internal_loader_count;
+	private static final String SIGNAL_WHERE = Signal.identifier1 + "=? AND " + Signal.identifier2 + "=? AND " + Signal.identifier3 + "=?";
+
+	private static final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.CANADA);
+	private static final SimpleDateFormat timeFormat = new SimpleDateFormat("dd'd 'HH'h 'mm'm 'ss's'", Locale.CANADA);
 
 	private EditText name;
 
-	private TextView uuid, major, minor;
+	private TextView identifier1, identifier2, identifier3;
 	private TextView distance, telemetry, battery, pduCount, uptime, time;
 	private CoordinatorLayout coordinator;
 
@@ -81,9 +93,9 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 					return true;
 				}
 
-				if(TextUtils.isEmpty(uuid.getText())
-						&& TextUtils.isEmpty(major.getText())
-						&& TextUtils.isEmpty(minor.getText())) {
+				if(TextUtils.isEmpty(identifier1.getText())
+						&& TextUtils.isEmpty(identifier2.getText())
+						&& TextUtils.isEmpty(identifier3.getText())) {
 					new AlertDialog.Builder(getContext())
 							.setCancelable(false)
 							.setTitle("Required field")
@@ -103,9 +115,9 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 					resolver.update(buildUri(PATH_BEACON, bundle.getLong(BEACON_ID)), cv, null, null);
 
 				} else {
-					cv.put(Beacon.uuid, uuid.getText().toString());
-					cv.put(Beacon.major, major.getText().toString());
-					cv.put(Beacon.minor, minor.getText().toString());
+					cv.put(Beacon.identifier1, identifier1.getText().toString());
+					cv.put(Beacon.identifier2, identifier2.getText().toString());
+					cv.put(Beacon.identifier3, identifier3.getText().toString());
 
 					resolver.insert(buildUri(PATH_BEACON), cv);
 				}
@@ -140,9 +152,9 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 
 		coordinator = (CoordinatorLayout) view.findViewById(R.id.coordinator);
 
-		uuid = (TextView) view.findViewById(R.id.uuid);
-		major = (TextView) view.findViewById(R.id.major);
-		minor = (TextView) view.findViewById(R.id.minor);
+		identifier1 = (TextView) view.findViewById(R.id.identifier1);
+		identifier2 = (TextView) view.findViewById(R.id.identifier2);
+		identifier3 = (TextView) view.findViewById(R.id.identifier3);
 
 		distance = (TextView) view.findViewById(R.id.distance);
 		telemetry = (TextView) view.findViewById(R.id.telemetry);
@@ -155,7 +167,12 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 
 		if(getArguments().containsKey(BEACON_ID)) {
 			fab.setVisibility(View.GONE);
-			getLoaderManager().initLoader(LOADER_ID, null, this);
+			getLoaderManager().initLoader(BEACON_LOADER_ID, null, this);
+			try {
+				((Application) getContext().getApplicationContext()).startScanning();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 
 		} else {
 			fab.setOnClickListener(this);
@@ -182,6 +199,11 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 			switch (view.getId()) {
 				case R.id.fab:
 					BeaconSearchDialog.show(getFragmentManager());
+					try {
+						((Application) getContext().getApplicationContext()).startScanning();
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
 
 				default:
 					adapter.enable();
@@ -192,35 +214,65 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
-		return new CursorLoader(getContext(), buildUri(PATH_BEACON, getArguments().getLong(BEACON_ID)), null, null, null, null);
+		if(id == BEACON_LOADER_ID) {
+			return new CursorLoader(getContext(), buildUri(PATH_BEACON, getArguments().getLong(BEACON_ID)), null, null, null, null);
+
+		} else if(id == SIGNAL_LOADER_ID) {
+			return new CursorLoader(getContext(), buildUri(PATH_SIGNAL), null, SIGNAL_WHERE,
+					new String[] { bundle.getString(Signal.identifier1, ""), bundle.getString(Signal.identifier2, ""), bundle.getString(Signal.identifier3, "") }, null);
+
+		} else throw new IllegalArgumentException();
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		if(cursor.moveToFirst()) {
-			fillInput(cursor);
+
+			final int id = loader.getId();
+			if(id == BEACON_LOADER_ID) {
+				final int index = cursor.getColumnIndex(Beacon.name);
+				if(0 <= index) {
+					name.setText(cursor.getString(index));
+				}
+
+				identifier1.setText(cursor.getString(cursor.getColumnIndex(Beacon.identifier1)));
+				identifier2.setText(cursor.getString(cursor.getColumnIndex(Beacon.identifier2)));
+				identifier3.setText(cursor.getString(cursor.getColumnIndex(Beacon.identifier3)));
+
+				Bundle bundle = new Bundle(3);
+				bundle.putString(Signal.identifier1, identifier1.getText().toString());
+				bundle.putString(Signal.identifier2, identifier2.getText().toString());
+				bundle.putString(Signal.identifier3, identifier3.getText().toString());
+
+				getLoaderManager().initLoader(SIGNAL_LOADER_ID, bundle, this);
+
+			} else if(id == SIGNAL_LOADER_ID) {
+				identifier1.setText(cursor.getString(cursor.getColumnIndex(Signal.identifier1)));
+				identifier2.setText(cursor.getString(cursor.getColumnIndex(Signal.identifier2)));
+				identifier3.setText(cursor.getString(cursor.getColumnIndex(Signal.identifier3)));
+
+				distance.setText(String.format(Locale.CANADA, "%.2f m", cursor.getDouble(cursor.getColumnIndex(Signal.distance))));
+				telemetry.setText(cursor.getString(cursor.getColumnIndex(Signal.telemetry)));
+				battery.setText(cursor.getLong(cursor.getColumnIndex(Signal.battery)) + " mV");
+				pduCount.setText(numberFormat.format(cursor.getLong(cursor.getColumnIndex(Signal.pduCount))));
+				uptime.setText(timeFormat.format(cursor.getLong(cursor.getColumnIndex(Signal.uptime)) * 100));
+				time.setText(cursor.getString(cursor.getColumnIndex(Signal.time)));
+
+			} else throw new IllegalArgumentException();
 		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) { }
 
-	protected void fillInput(Cursor cursor) {
-
-		final int index = cursor.getColumnIndex(Beacon.name);
-		if(0 <= index) {
-			name.setText(cursor.getString(index));
+	@Override
+	public void onDestroy() {
+		try {
+			((Application) getContext().getApplicationContext()).startScanning();
+		} catch (RemoteException e) {
+			e.printStackTrace();
 		}
 
-		uuid.setText(cursor.getString(cursor.getColumnIndex(Beacon.uuid)));
-		major.setText(cursor.getString(cursor.getColumnIndex(Beacon.major)));
-		minor.setText(cursor.getString(cursor.getColumnIndex(Beacon.minor)));
-
-		distance.setText(cursor.getString(cursor.getColumnIndex(Signal.distance)));
-		telemetry.setText(cursor.getString(cursor.getColumnIndex(Signal.telemetry)));
-		battery.setText(cursor.getString(cursor.getColumnIndex(Signal.battery)));
-		pduCount.setText(cursor.getString(cursor.getColumnIndex(Signal.pduCount)));
-		uptime.setText(cursor.getString(cursor.getColumnIndex(Signal.uptime)));
-		time.setText(cursor.getString(cursor.getColumnIndex(Signal.time)));
+		super.onDestroy();
 	}
 }
