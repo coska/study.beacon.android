@@ -15,19 +15,13 @@ import org.json.JSONObject;
 public abstract class Rule implements BaseColumns {
 
 	public enum Type {
-		Time, Location;
+		Time, Location
 	}
 
 	public static final class Builder {
 
-		private String name = null;
 		private Type type = null;
 		private JSONObject json = new JSONObject();
-
-		public Builder name(String name) {
-			this.name = name;
-			return this;
-		}
 
 		public Builder type(Type type) {
 			this.type = type;
@@ -54,9 +48,9 @@ public abstract class Rule implements BaseColumns {
 			return this;
 		}
 
-		public ContentValues build() {
+		public ContentValues build(long taskId) {
 			ContentValues cv = new ContentValues(3);
-			cv.put(Rule.name, name);
+			cv.put(Rule._task_id, taskId);
 			cv.put(Rule.type, type.ordinal());
 			cv.put(Rule.configuration, json.toString());
 			return cv;
@@ -91,10 +85,10 @@ public abstract class Rule implements BaseColumns {
 
 		final int value = cursor.getInt(cursor.getColumnIndex(type));
 		switch (value) {
-			case 1:
+			case 0:
 				return new Time(json);
 
-			case 2:
+			case 1:
 				return new Location(json);
 
 			default:
@@ -105,9 +99,7 @@ public abstract class Rule implements BaseColumns {
 	public static final String _table = "rule";
 	public static final String _task_id = "task_id";
 
-	public static final String name = "name";
 	public static final String type = "type";
-
 	public static final String configuration = "configuration";
 
 	protected final JSONObject json;

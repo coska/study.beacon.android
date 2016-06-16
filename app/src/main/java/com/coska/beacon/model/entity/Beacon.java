@@ -6,13 +6,10 @@ public class Beacon implements BaseColumns {
 
 	public static final String _table = "beacon";
 
-	public static final String uuid = "uuid";
 	public static final String name = "name";
-
-	public static final String major = "major";
-	public static final String minor = "minor";
-
-	public static final String status = "status";
+	public static final String identifier1 = "identifier_1";
+	public static final String identifier2 = "identifier_2";
+	public static final String identifier3 = "identifier_3";
 
 	private Beacon() { }
 }

@@ -1,149 +1,90 @@
 package com.coska.beacon.ui.main;
 
-import android.content.ContentValues;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
-
-import android.view.Menu;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import com.coska.beacon.R;
-import com.coska.beacon.model.BeaconProvider;
-import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.ui.base.BaseActivity;
+import com.coska.beacon.ui.beacon.BeaconActivity;
+import com.coska.beacon.ui.task.TaskActivity;
 
-import java.util.UUID;
+public class MainActivity extends BaseActivity implements TabLayout.OnTabSelectedListener, View.OnClickListener {
 
-
-public class MainActivity extends BaseActivity { // implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
-
-	//private static final int LOADER_ID = 1;
-
-//	private RecyclerView recyclerView;
+	private ViewPager viewPager;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
 
-		showFragment(new MainFragment(), R.id.fragment_container, true, false);
+		setContentView(R.layout.main_activity);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
 
-		/*
-		recyclerView = (RecyclerView) findViewById(android.R.id.list);
-		recyclerView.setLayoutManager(new LinearLayoutManager(this));
-		recyclerView.setHasFixedSize(true);
+		TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+		tabLayout.setOnTabSelectedListener(this);
 
-		getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+		viewPager = (ViewPager) findViewById(R.id.pager);
+		viewPager.setAdapter(new Adapter(getSupportFragmentManager()));
+		viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-		//noinspection ConstantConditions
-		findViewById(R.id.new_task_floating_btn).setOnClickListener(this);
-		*/
+		findViewById(R.id.fab).setOnClickListener(this);
 	}
 
 	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		overridePendingTransition(0, 0);
-	}
-
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main_menu, menu);
-		return super.onCreateOptionsMenu(menu);
+	public void onTabSelected(TabLayout.Tab tab) {
+		viewPager.setCurrentItem(tab.getPosition());
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public void onTabUnselected(TabLayout.Tab tab) { }
 
-		switch (item.getItemId()) {
+	@Override
+	public void onTabReselected(TabLayout.Tab tab) { }
 
-			case R.id.create: {
-				ContentValues cv = new ContentValues();
-				cv.put(Beacon.name, Long.toString(Math.abs(System.currentTimeMillis())));
-				cv.put(Beacon.uuid, UUID.randomUUID().toString());
+	@Override
+	public void onClick(View view) {
 
-				getContentResolver().insert(BeaconProvider.buildUri(BeaconProvider.PATH_BEACON), cv);
-				return true;
-			}
+		switch (viewPager.getCurrentItem()) {
+			case 0:
+				BeaconActivity.startActivity(this);
+				break;
 
-			case R.id.update: {
-				ContentValues cv = new ContentValues();
-				cv.put(Beacon.name, Long.toString(Math.abs(System.currentTimeMillis())));
-
-//				Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_BEACON, recyclerView.getAdapter().getItemId(0));
-//				getContentResolver().update(uri, cv, null, null);
-				return true;
-			}
-
-			case R.id.delete: {
-//				Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_BEACON, recyclerView.getAdapter().getItemId(0));
-//				getContentResolver().delete(uri, null, null);
-				return true;
-			}
-
-			default:
-				return super.onOptionsItemSelected(item);
+			case 1:
+				TaskActivity.startActivity(this);
+				break;
 		}
 	}
-/*
-	@Override
-	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		return new CursorLoader(this, BeaconProvider.buildUri(PATH_BEACON), null, null, null, _ID + " DESC");
-	}
 
-	@Override
-	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		recyclerView.swapAdapter(new Adapter(cursor), false);
-	}
+	public static final class Adapter extends FragmentStatePagerAdapter {
 
-	@Override
-	public void onLoaderReset(Loader<Cursor> loader) { }
-
-	private static final class Adapter extends RecyclerView.Adapter<ViewHolder> {
-
-		private final Cursor cursor;
-		private Adapter(Cursor cursor) {
-			setHasStableIds(true);
-			this.cursor = cursor;
+		public Adapter(FragmentManager manager) {
+			super(manager);
 		}
 
 		@Override
-		public long getItemId(int position) {
-			if(cursor.moveToPosition(position)) {
-				return cursor.getLong(cursor.getColumnIndex(_ID));
+		public Fragment getItem(int position) {
 
-			} else {
-				return -1;
+			switch (position) {
+				case 0:
+					return new BeaconsFragment();
+				case 1:
+					return new TasksFragment();
+
+				default:
+					throw new IndexOutOfBoundsException();
 			}
 		}
 
 		@Override
-		public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-			LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-			return new ViewHolder(inflater.inflate(android.R.layout.simple_list_item_1, parent, false));
-		}
-
-		@Override
-		public void onBindViewHolder(ViewHolder holder, int position) {
-			if(cursor.moveToPosition(position)) {
-				String text = DatabaseUtils.dumpCurrentRowToString(cursor);
-				((TextView) holder.itemView).setText(text);
-			}
-		}
-
-		@Override
-		public int getItemCount() {
-			return cursor == null ? 0 : cursor.getCount();
+		public int getCount() {
+			return 2;
 		}
 	}
-
-	private static final class ViewHolder extends RecyclerView.ViewHolder {
-
-		public ViewHolder(View itemView) {
-			super(itemView);
-		}
-	}
-	*/
 }

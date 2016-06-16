@@ -1,10 +1,10 @@
 package com.coska.beacon;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 
-import com.coska.beacon.model.BeaconProvider;
 import com.coska.beacon.model.entity.Signal;
 
 import org.altbeacon.beacon.Beacon;
@@ -21,6 +21,10 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static com.coska.beacon.model.BeaconProvider.PATH_BEACON;
+import static com.coska.beacon.model.BeaconProvider.PATH_SIGNAL;
+import static com.coska.beacon.model.BeaconProvider.buildUri;
 
 public class Application extends android.app.Application implements BootstrapNotifier, BeaconConsumer {
 
@@ -48,16 +52,25 @@ public class Application extends android.app.Application implements BootstrapNot
 
 	@Override
 	public void onBeaconServiceConnect() {
+		Cursor cursor = getContentResolver().query(buildUri(PATH_BEACON), null, null, null, null);
 		try {
-			bind();  // scanning all beacons around for ids and distance
+			final int name = cursor.getColumnIndex(com.coska.beacon.model.entity.Beacon.name);
+			final int uuid = cursor.getColumnIndex(com.coska.beacon.model.entity.Beacon.identifier1);
+			final int major = cursor.getColumnIndex(com.coska.beacon.model.entity.Beacon.identifier2);
+			final int minor = cursor.getColumnIndex(com.coska.beacon.model.entity.Beacon.identifier3);
+
+			for(int i = 0; cursor.moveToPosition(i); i++) {
+
+				Region region = new Region(cursor.getString(name),
+						Identifier.parse(cursor.getString(uuid)),
+						Identifier.parse(cursor.getString(major)),
+						Identifier.parse(cursor.getString(minor)));
+
+				// looking for a beacon on foreground
+				beaconManager.startMonitoringBeaconsInRegion(region);
+				beaconManager.setMonitorNotifier(this);
+			}
 /*
-			Identifier namespace = Identifier.parse("0x2f234454f4911ba9ffa6");
-			Identifier instanceId = Identifier.parse("0x000000000001");
-			Region region = new Region("some_beacon_name", namespace, instanceId, null);
-
-			// looking for a beacon on foreground
-			bind(region);
-
 			// looking for a beacon in background
 			bootstrap = new RegionBootstrap(this, region);
 */
@@ -65,14 +78,18 @@ public class Application extends android.app.Application implements BootstrapNot
 			e.printStackTrace();
 			beaconManager.unbind(this);
 			bootstrap.disable();
+
+		} finally {
+			cursor.close();
 		}
 	}
 
-	private void bind() throws RemoteException {
-		beaconManager.startRangingBeaconsInRegion(new Region("some_unique_value", null, null, null));
+	public void startScanning() throws RemoteException {
+
+		beaconManager.startRangingBeaconsInRegion(new Region("scanning", null, null, null));
 		beaconManager.setRangeNotifier(new RangeNotifier() {
 
-			private final Uri uri = BeaconProvider.buildUri(BeaconProvider.PATH_SIGNAL);
+			private final Uri uri = buildUri(PATH_SIGNAL);
 
 			@Override
 			public void didRangeBeaconsInRegion(Collection<Beacon> collection, Region region) {
@@ -80,34 +97,37 @@ public class Application extends android.app.Application implements BootstrapNot
 				List<ContentValues> list = new ArrayList<>(collection.size());
 				for (Beacon beacon:collection) {
 
-					ContentValues cv = new ContentValues();
-					cv.put(Signal.uuid, String.valueOf(beacon.getServiceUuid()));
 /*
 					// Eddystone-UID frame
 					if (beacon.getServiceUuid() == 0xfeaa && beacon.getBeaconTypeCode() == 0x00) { }
 */
 					List<Identifier> identifiers = beacon.getIdentifiers();
-					switch (identifiers.size()) {
-						default:
-						case 2: cv.put(Signal.minor, String.valueOf(identifiers.get(1)));
-						case 1: cv.put(Signal.major, String.valueOf(identifiers.get(0)));
-						case 0:
+					if(1 < identifiers.size()) {
+
+						ContentValues cv = new ContentValues();
+
+						switch (identifiers.size()) {
+							default: cv.put(Signal.identifier3, String.valueOf(identifiers.get(2)));
+							case 2: cv.put(Signal.identifier2, String.valueOf(identifiers.get(1)));
+								cv.put(Signal.identifier1, String.valueOf(identifiers.get(0)));
+						}
+
+						cv.put(Signal.name, beacon.getBluetoothName());
+						cv.put(Signal.distance, beacon.getDistance());
+
+						List<Long> extra = beacon.getExtraDataFields();
+						switch (extra.size()) {
+							default:
+							case 5: cv.put(Signal.uptime, extra.get(4));
+							case 4: cv.put(Signal.pduCount, extra.get(3));
+							case 3:
+							case 2: cv.put(Signal.battery, extra.get(1));
+							case 1: cv.put(Signal.telemetry, extra.get(0));
+							case 0:
+						}
+
+						list.add(cv);
 					}
-
-					cv.put(Signal.distance, beacon.getDistance());
-
-					List<Long> extra = beacon.getExtraDataFields();
-					switch (extra.size()) {
-						default:
-						case 5: cv.put(Signal.uptime, extra.get(4));
-						case 4: cv.put(Signal.pduCount, extra.get(3));
-						case 3:
-						case 2: cv.put(Signal.battery, extra.get(1));
-						case 1: cv.put(Signal.telemetry, extra.get(0));
-						case 0:
-					}
-
-					list.add(cv);
 				}
 
 				getContentResolver().bulkInsert(uri, list.toArray(new ContentValues[list.size()]));
@@ -115,9 +135,8 @@ public class Application extends android.app.Application implements BootstrapNot
 		});
 	}
 
-	private void bind(Region region) throws RemoteException {
-		beaconManager.startMonitoringBeaconsInRegion(region);
-		beaconManager.setMonitorNotifier(this);
+	public void stopScanning() throws RemoteException {
+		beaconManager.stopRangingBeaconsInRegion(new Region("scanning", null, null, null));
 	}
 
 	@Override
@@ -127,12 +146,8 @@ public class Application extends android.app.Application implements BootstrapNot
 	}
 
 	@Override
-	public void didExitRegion(Region region) {
-
-	}
+	public void didExitRegion(Region region) { }
 
 	@Override
-	public void didDetermineStateForRegion(int state, Region region) {
-
-	}
+	public void didDetermineStateForRegion(int state, Region region) { }
 }

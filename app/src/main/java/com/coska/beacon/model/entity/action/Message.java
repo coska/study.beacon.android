@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 public class Message extends Action {
 
+	public static final String NAME = "name";
 	public static final String DIAL_NUMBER = "dial_number";
 	public static final String SMS_MESSAGE = "sms_message";
 
@@ -14,9 +15,14 @@ public class Message extends Action {
 		super(json);
 	}
 
+	private String getName() {
+		return json.optString(NAME);
+	}
+
 	private String getDialNumber() {
 		return json.optString(DIAL_NUMBER);
 	}
+
 	private String getSmsMessage() {
 		return json.optString(SMS_MESSAGE);
 	}

@@ -3,9 +3,11 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools">
 
-	<uses-feature android:name="android.hardware.bluetooth" android:required="true" />
+	<uses-feature
+		android:name="android.hardware.bluetooth"
+		android:required="true" />
 
-	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.CALL_PHONE" />
@@ -13,8 +15,8 @@
 	<uses-permission android:name="android.permission.SEND_SMS" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-	<uses-permission android:name="android.permission.BLUETOOTH"/>
-	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+	<uses-permission android:name="android.permission.BLUETOOTH" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
 	<application
 		android:name=".Application"
@@ -32,15 +34,13 @@
 			</intent-filter>
 		</activity>
 
-		<activity android:name=".ui.task.EditTaskActivity"
-			android:configChanges="orientation|keyboardHidden|screenSize"
-			android:exported="false"
-			android:screenOrientation="portrait" />
+		<activity
+			android:name=".ui.beacon.BeaconActivity"
+			android:windowSoftInputMode="stateHidden" />
 
-		<activity android:name=".ui.Beacon.EditBeaconActivity"
-			android:configChanges="orientation|keyboardHidden|screenSize"
-			android:exported="false"
-			android:screenOrientation="portrait" />
+		<activity
+			android:name=".ui.task.TaskActivity"
+			android:windowSoftInputMode="stateHidden" />
 
 		<provider
 			android:name=".model.BeaconProvider"

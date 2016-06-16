@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.coska.beacon.ui.task.rule.TimeView style="@style/Task.Card"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:coska="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<LinearLayout
+		style="@style/Coska.Container"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<TextView
+			style="@style/Task.Card.Title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Time" />
+
+		<android.support.v7.widget.GridLayout
+			android:id="@+id/grid"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:animateLayoutChanges="true"
+			coska:columnCount="3"
+			coska:useDefaultMargins="true">
+
+			<CheckBox
+				android:id="@+id/mon_cbx"
+				android:text="Monday"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/mon_from"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/mon_to"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<CheckBox
+				android:id="@+id/tue_cbx"
+				android:text="Tuesday"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/tue_from"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/tue_to"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<CheckBox
+				android:id="@+id/wed_cbx"
+				android:text="Wednesday"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/wed_from"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/wed_to"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<CheckBox
+				android:id="@+id/thu_cbx"
+				android:text="Thursday"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/thu_from"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/thu_to"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<CheckBox
+				android:id="@+id/fri_cbx"
+				android:text="Friday"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/fri_from"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/fri_to"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<CheckBox
+				android:id="@+id/sat_cbx"
+				android:text="Saturday"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/sat_from"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/sat_to"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<CheckBox
+				android:id="@+id/sun_cbx"
+				android:text="Sunday"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/sun_from"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+
+			<TextView
+				android:id="@+id/sun_to"
+				style="@style/Task.Card.Button"
+				android:text="0000"
+				android:visibility="invisible"
+				coska:layout_columnWeight="1" />
+		</android.support.v7.widget.GridLayout>
+
+	</LinearLayout>
+</com.coska.beacon.ui.task.rule.TimeView>
