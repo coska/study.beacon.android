@@ -9,15 +9,6 @@ import org.json.JSONObject;
 
 public class Location extends Rule {
 
-	/*
-	configuration sample JSON format.
-	{
-		"latitude": -99.99999,
-		"longitude": 99.99999,
-		"accuracy": 30.0
-	}
-	*/
-
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String ACCURACY = "accuracy";
@@ -40,7 +31,7 @@ public class Location extends Rule {
 
 	@Override
 	public boolean isMatch(Context context) {
-
+/*
 		GoogleApiClient client = new GoogleApiClient.Builder(context)
 				.addApi(LocationServices.API)
 				.build();
@@ -55,5 +46,7 @@ public class Location extends Rule {
 		} finally {
 			client.disconnect();
 		}
+*/
+		return true;
 	}
 }

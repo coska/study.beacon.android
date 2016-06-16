@@ -1,39 +1,69 @@
 <resources>
 
-	<!-- Base application theme. -->
-	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-		<!-- Customize your theme here. -->
+	<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="colorAccent">@color/colorAccent</item>
+		<item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
+	</style>
+
+	<style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
 		<item name="colorAccent">@color/colorAccent</item>
 	</style>
 
-	<!--toolbar -->
-	<style name="toolbarTheme"
-		parent="@style/ThemeOverlay.AppCompat.ActionBar">
+	<style name="Coska" />
 
-		<!--<item name="android:background">@color/primaryColor</item>-->
-		<!--<item name="colorAccent">@color/pcc_green_dark</item>-->
-		<!--<item name="actionMenuTextColor">@color/pcc_green_dark</item>-->
-
-		<item name="android:textColorPrimary">@color/white</item>
-		<item name="android:textColorSecondary">@color/white</item>
+	<style name="Coska.Container">
+		<item name="android:paddingLeft">?android:listPreferredItemPaddingLeft</item>
+		<item name="android:paddingRight">?android:listPreferredItemPaddingRight</item>
+		<item name="android:paddingTop">?android:listPreferredItemPaddingStart</item>
+		<item name="android:paddingBottom">?android:listPreferredItemPaddingEnd</item>
 	</style>
 
-	<style name="toolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
-		<item name="android:textSize">20dp</item>
-	</style>
+	<style name="Coska.Text" />
 
-	<style name="overflowMenuStyle" parent="ThemeOverlay.AppCompat.Light">
-		<item name="android:background">@android:color/transparent</item>
-		<item name="android:textColor">@color/primaryText</item>
-	</style>
-
-	<style name="tabTextStyle">
-		<item name="android:textSize">13sp</item>
-		<item name="android:textAllCaps">true</item>
+	<style name="Coska.Text.Caption">
+		<item name="android:textSize">16sp</item>
 		<item name="android:textStyle">bold</item>
+		<item name="android:layout_marginTop">16dp</item>
+		<item name="android:layout_marginBottom">8dp</item>
 	</style>
 
+	<style name="Coska.Text.Primary">
+		<item name="android:textColor">@android:color/primary_text_light</item>
+	</style>
+
+	<style name="Coska.Text.Secondary">
+		<item name="android:textColor">@android:color/darker_gray</item>
+	</style>
+
+	<style name="Coska.Text.Input">
+		<item name="android:textSize">12sp</item>
+	</style>
+
+	<style name="Coska.Text.Button">
+		<item name="android:padding">10dp</item>
+		<item name="android:gravity">right</item>
+		<item name="android:textColor">@android:color/darker_gray</item>
+		<item name="android:background">?android:selectableItemBackground</item>
+		<item name="android:clickable">true</item>
+	</style>
+
+	<style name="Task.Card" parent="Coska.Container">
+		<item name="android:layout_margin">10dp</item>
+		<item name="cardCornerRadius">2dp</item>
+	</style>
+
+	<style name="Task.Card.Title" parent="Coska.Text.Secondary">
+		<item name="android:textSize">12sp</item>
+		<item name="android:textAllCaps">true</item>
+		<item name="android:gravity">right</item>
+	</style>
+
+	<style name="Task.Card.Button" parent="Coska.Text.Button">
+		<item name="android:gravity">center</item>
+	</style>
 
 </resources>

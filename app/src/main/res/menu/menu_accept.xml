@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:coska="http://schemas.android.com/apk/res-auto">
+
+	<item
+		android:id="@+id/accept"
+		android:icon="@mipmap/ic_action_accept"
+		android:orderInCategory="100"
+		android:title="@android:string/ok"
+		coska:showAsAction="always" />
+</menu>

@@ -5,19 +5,18 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.coska.beacon.model.entity.action.Action;
 import com.coska.beacon.model.entity.Beacon;
-import com.coska.beacon.model.entity.rule.Rule;
+import com.coska.beacon.model.entity.Signal;
 import com.coska.beacon.model.entity.Task;
+import com.coska.beacon.model.entity.action.Action;
+import com.coska.beacon.model.entity.rule.Rule;
 
-// https://github.com/coska/study.beacon/blob/master/doc/BLE.study.data.diagram.pdf
 public class BeaconProvider extends ContentProvider {
 
 	public static final String SCHEME = "content://";
@@ -27,27 +26,32 @@ public class BeaconProvider extends ContentProvider {
 	private static final String TYPE_ITEM = "vnd.android.cursor.item/" + BASE_PATH;
 	private static final String TYPE_DIR = "vnd.android.cursor.dir/" + BASE_PATH;
 
+	public static final String PATH_SIGNAL = "signal";
 	public static final String PATH_BEACON = "beacon";
 	public static final String PATH_TASK = "task";
 	public static final String PATH_RULE = "rule";
 	public static final String PATH_ACTION = "action";
 
-	private static final int BEACON = 1;
-	private static final int BEACON_ID = 2;
-	private static final int BEACON_TASK = 3;
+	private static final int SIGNAL = 1;
 
-	private static final int TASK = 4;
-	private static final int TASK_ID = 5;
+	private static final int BEACON = 2;
+	private static final int BEACON_ID = 3;
+	private static final int BEACON_TASK = 4;
 
-	private static final int TASK_RULE = 6;
-	private static final int TASK_ACTION = 7;
+	private static final int TASK = 5;
+	private static final int TASK_ID = 6;
 
-	private static final int RULE_ID = 8;
-	private static final int ACTION_ID = 9;
+	private static final int TASK_RULE = 7;
+	private static final int TASK_ACTION = 8;
+
+	private static final int RULE_ID = 9;
+	private static final int ACTION_ID = 10;
 
 	private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
 	static {
+		matcher.addURI(AUTHORITY, PATH_SIGNAL, SIGNAL);
+
 		matcher.addURI(AUTHORITY, PATH_BEACON, BEACON); // all beacons
 		matcher.addURI(AUTHORITY, PATH_BEACON + "/#", BEACON_ID);   // a beacon with id
 		matcher.addURI(AUTHORITY, PATH_BEACON + "/#/" + PATH_TASK, BEACON_TASK);    // all tasks associate with a beacon
@@ -73,12 +77,12 @@ public class BeaconProvider extends ContentProvider {
 		return Uri.parse(builder.toString());
 	}
 
-	protected SQLiteOpenHelper helper;
+	protected SQLiteDatabase database;
 
 	@Override
 	public boolean onCreate() {
-		helper = new Database(getContext());
-		return true;
+		database = new Database(getContext()).getWritableDatabase();
+		return database != null;
 	}
 
 	@Nullable
@@ -86,8 +90,11 @@ public class BeaconProvider extends ContentProvider {
 	public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
 		SQLiteQueryBuilder builder = new SQLiteQueryBuilder();
-
 		switch (matcher.match(uri)) {
+			case SIGNAL:
+				builder.setTables(Signal._table);
+				break;
+
 			case BEACON:
 				builder.setTables(Beacon._table);
 				break;
@@ -103,11 +110,11 @@ public class BeaconProvider extends ContentProvider {
 				break;
 
 			case TASK:
-				builder.setTables(Task._table);
+				builder.setTables(Task._table + "_view");
 				break;
 
 			case TASK_ID:
-				builder.setTables(Task._table);
+				builder.setTables(Task._table + "_view");
 				builder.appendWhere(Task._ID + "=" + uri.getPathSegments().get(1));
 				break;
 
@@ -135,7 +142,7 @@ public class BeaconProvider extends ContentProvider {
 				throw new IllegalArgumentException("Unknown URI " + uri);
 		}
 
-		Cursor cursor = builder.query(helper.getReadableDatabase(), projection, selection, selectionArgs, null, null, sortOrder);
+		Cursor cursor = builder.query(database, projection, selection, selectionArgs, null, null, sortOrder);
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
 	}
@@ -145,6 +152,7 @@ public class BeaconProvider extends ContentProvider {
 	public String getType(@NonNull Uri uri) {
 
 		switch (matcher.match(uri)) {
+			case SIGNAL: return TYPE_DIR + "." + PATH_SIGNAL;
 			case BEACON: return TYPE_DIR + "." + PATH_BEACON;
 			case BEACON_ID: return TYPE_ITEM + "." + PATH_BEACON;
 			case BEACON_TASK: return TYPE_ITEM + "." + PATH_TASK;
@@ -163,22 +171,27 @@ public class BeaconProvider extends ContentProvider {
 	@Override
 	public Uri insert(@NonNull Uri uri, ContentValues values) {
 
-		SQLiteDatabase db = helper.getWritableDatabase();
 		switch (matcher.match(uri)) {
+			case SIGNAL:
+				if(0 <= database.insert(Signal._table, null, values)) {
+					getContext().getContentResolver().notifyChange(uri, null);
+				}
+				return uri;
+
 			case BEACON:
-				return insertNotify(db.insert(Beacon._table, null, values), PATH_BEACON);
+				return insertNotify(database.insert(Beacon._table, null, values), PATH_BEACON);
 
 			case BEACON_TASK:
 				values.put(Task._beacon_id, uri.getPathSegments().get(1));
-				return insertNotify(db.insert(Task._table, null, values), PATH_TASK);
+				return insertNotify(database.insert(Task._table, null, values), PATH_TASK);
 
 			case TASK_RULE:
 				values.put(Rule._task_id, uri.getPathSegments().get(1));
-				return insertNotify(db.insert(Rule._table, null, values), PATH_RULE);
+				return insertNotify(database.insert(Rule._table, null, values), PATH_RULE);
 
 			case TASK_ACTION:
 				values.put(Action._task_id, uri.getPathSegments().get(1));
-				return insertNotify(db.insert(Action._table, null, values), PATH_ACTION);
+				return insertNotify(database.insert(Action._table, null, values), PATH_ACTION);
 
 			default:
 				throw new IllegalArgumentException("Unknown URI " + uri);
@@ -219,8 +232,7 @@ public class BeaconProvider extends ContentProvider {
 
 	private int delete(String table, Uri uri) {
 
-		final int count = helper.getWritableDatabase()
-				.delete(table, BaseColumns._ID + "=?", new String[] { uri.getPathSegments().get(1) });
+		final int count = database.delete(table, BaseColumns._ID + "=?", new String[] { uri.getPathSegments().get(1) });
 		if(0 < count) {
 			getContext().getContentResolver().notifyChange(uri, null);
 		}
@@ -252,8 +264,7 @@ public class BeaconProvider extends ContentProvider {
 
 	private int update(String table, ContentValues values, Uri uri) {
 
-		final int count = helper.getWritableDatabase()
-				.update(table, values, BaseColumns._ID + "=?", new String[] { uri.getPathSegments().get(1) });
+		final int count = database.update(table, values, BaseColumns._ID + "=?", new String[] { uri.getPathSegments().get(1) });
 		if(0 < count) {
 			getContext().getContentResolver().notifyChange(uri, null);
 		}
