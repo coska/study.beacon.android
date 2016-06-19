@@ -2,6 +2,7 @@ package com.coska.beacon.model;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,11 +12,15 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.coska.beacon.Application;
 import com.coska.beacon.model.entity.Beacon;
 import com.coska.beacon.model.entity.Signal;
 import com.coska.beacon.model.entity.Task;
 import com.coska.beacon.model.entity.action.Action;
 import com.coska.beacon.model.entity.rule.Rule;
+
+import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.Region;
 
 public class BeaconProvider extends ContentProvider {
 
@@ -178,8 +183,24 @@ public class BeaconProvider extends ContentProvider {
 				}
 				return uri;
 
-			case BEACON:
-				return insertNotify(database.insert(Beacon._table, null, values), PATH_BEACON);
+			case BEACON: {
+				long rowId = database.insert(Beacon._table, null, values);
+				Uri.parse(SCHEME + AUTHORITY + "/" + PATH_BEACON + "/" + rowId);
+
+				if(0 <= rowId) {
+					Context context = getContext();
+					context.getContentResolver().notifyChange(uri, null);
+					try {
+						((Application) context.getApplicationContext())
+								.startScanning(new Region(values.getAsString(Beacon.name),
+										Identifier.parse(values.getAsString(Beacon.identifier1)),
+										Identifier.parse(values.getAsString(Beacon.identifier2)),
+										Identifier.parse(values.getAsString(Beacon.identifier3))));
+					} catch (Exception ignore) { }
+				}
+
+				return uri;
+			}
 
 			case BEACON_TASK:
 				values.put(Task._beacon_id, uri.getPathSegments().get(1));
@@ -213,8 +234,41 @@ public class BeaconProvider extends ContentProvider {
 
 		switch (matcher.match(uri)) {
 
-			case BEACON_ID:
-				return delete(Beacon._table, uri);
+			case BEACON_ID: {
+
+				Region region = null;
+
+				Cursor cursor = database.query(Beacon._table,
+						new String[] {
+								Beacon.name,
+								Beacon.identifier1,
+								Beacon.identifier2,
+								Beacon.identifier3 }, whereClause, whereArgs, null, null, null);
+				if(cursor != null) {
+					if(cursor.moveToFirst()) {
+						region = new Region(cursor.getString(cursor.getColumnIndex(Beacon.name)),
+								Identifier.parse(cursor.getString(cursor.getColumnIndex(Beacon.identifier1))),
+								Identifier.parse(cursor.getString(cursor.getColumnIndex(Beacon.identifier2))),
+								Identifier.parse(cursor.getString(cursor.getColumnIndex(Beacon.identifier3))));
+					}
+
+					cursor.close();
+				}
+
+				final int count = database.delete(Beacon._table, Beacon._ID + "=?", new String[] { uri.getPathSegments().get(1) });
+				if(0 < count) {
+					Context context = getContext();
+					context.getContentResolver().notifyChange(uri, null);
+
+					if(region != null) {
+						try {
+							((Application) context.getApplicationContext())
+									.stopScanning(region);
+						} catch (Exception ignore) { }
+					}
+				}
+				return count;
+			}
 
 			case TASK_ID:
 				return delete(Task._table, uri);
