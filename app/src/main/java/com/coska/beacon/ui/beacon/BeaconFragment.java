@@ -268,7 +268,7 @@ public class BeaconFragment extends BaseFragment implements LoaderManager.Loader
 	@Override
 	public void onDestroy() {
 		try {
-			((Application) getContext().getApplicationContext()).startScanning();
+			((Application) getContext().getApplicationContext()).stopScanning();
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
