@@ -21,7 +21,7 @@ public class TaskService extends IntentService {
 
 	private static final String BUNDLE_IDENTIFIER = "_bundle_identifier";
 
-	public static void startService(Context context, String... identifier) {
+	public static void startService(Context context, String[] identifier) {
 		context.startService(new Intent(context, TaskService.class)
 			.putExtra(BUNDLE_IDENTIFIER, identifier));
 	}

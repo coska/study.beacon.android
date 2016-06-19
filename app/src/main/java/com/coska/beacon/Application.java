@@ -1,11 +1,13 @@
 package com.coska.beacon;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 
 import com.coska.beacon.model.entity.Signal;
+import com.coska.beacon.service.TaskService;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -60,15 +62,10 @@ public class Application extends android.app.Application implements BootstrapNot
 			final int minor = cursor.getColumnIndex(com.coska.beacon.model.entity.Beacon.identifier3);
 
 			for(int i = 0; cursor.moveToPosition(i); i++) {
-
-				Region region = new Region(cursor.getString(name),
+				startScanning(new Region(cursor.getString(name),
 						Identifier.parse(cursor.getString(uuid)),
 						Identifier.parse(cursor.getString(major)),
-						Identifier.parse(cursor.getString(minor)));
-
-				// looking for a beacon on foreground
-				beaconManager.startMonitoringBeaconsInRegion(region);
-				beaconManager.setMonitorNotifier(this);
+						Identifier.parse(cursor.getString(minor))));
 			}
 /*
 			// looking for a beacon in background
@@ -139,10 +136,35 @@ public class Application extends android.app.Application implements BootstrapNot
 		beaconManager.stopRangingBeaconsInRegion(new Region("scanning", null, null, null));
 	}
 
+	public void startScanning(Region region) throws RemoteException {
+		beaconManager.startMonitoringBeaconsInRegion(region);
+		beaconManager.setMonitorNotifier(this);
+	}
+
+	public void stopScanning(Region region) throws RemoteException {
+		beaconManager.stopMonitoringBeaconsInRegion(region);
+	}
+
 	@Override
 	public void didEnterRegion(Region region) {
+
+		ArrayList<String> identifiers = new ArrayList<>(3);
 		Identifier namespace = region.getId1();
-		Identifier instanceId = region.getId2();
+		if(namespace != null) {
+			identifiers.add(namespace.toString());
+
+			Identifier instanceId = region.getId2();
+			if(instanceId != null) {
+				identifiers.add(instanceId.toString());
+
+				Identifier extra = region.getId3();
+				if(extra != null) {
+					identifiers.add(extra.toString());
+				}
+			}
+		}
+
+		TaskService.startService(this, identifiers.toArray(new String[identifiers.size()]));
 	}
 
 	@Override
